@@ -15,20 +15,20 @@ import fr.renoux.nightbirds.rules.generics.Neighbours
 class StubCardWithoutTarget(c: Callbacks, b: Board, f: Family, g: Guts = Guts(1), illegal: Legality = Illegal)
   extends Card(c, b, f, g, Illegal) with WithoutTarget {
 
-  def doProceed = {Neighbours(None, None)}
+  def doProceed = {}
   
 }
 
 class StubCardWithTarget(c: Callbacks, b: Board, f: Family, g: Guts = Guts(1), illegal: Legality = Illegal)
   extends Card(c, b, f, g, Illegal) with WithTarget {
 
-  def doProceed(target: Card) = {Neighbours(None, None)}
+  def doProceed(target: Card) = {}
   
 }
 
 class StubCardWithTargetAndMore(c: Callbacks, b: Board, f: Family, g: Guts = Guts(1), illegal: Legality = Illegal)
   extends Card(c, b, f, g, Illegal) with WithTargetAndMore[Any] {
 
-  def doProceed(target : Card, more: Any) = {Neighbours(None, None)}
+  def doProceed(target : Card, more: Any) = {}
   
 }

@@ -6,7 +6,7 @@ import fr.renoux.nightbirds.rules.generics.WithTargetAndMore
 
 class StubPlayer extends Callbacks {
   
-  var target = null
+  var target: Card = null
 
   def reactToTarget(target: Card, source: Card) = true
 

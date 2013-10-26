@@ -11,46 +11,38 @@ import fr.renoux.nightbirds.rules.specifics.colors.Blue
 
 class BumTest {
 
-  var player : StubPlayer = new StubPlayer
-  var bum: Bum = null
-  var family: Family = null
-
-  @Before
-  def prepare = {
-    family = Family(Blue)
-    val b = new Board(family)
-    bum = new Bum(player, b, family)
-  }
-
   @Test
   def gainMoney() = {
-    Assert.assertEquals(Cash(0), bum.cash)
-    bum.activate
-    Assert.assertEquals(Cash(1), bum.cash)
+    val game = new StubGame
+    Assert.assertEquals(Cash(0), game.bum.cash)
+    game.bum.activate
+    Assert.assertEquals(Cash(1), game.bum.cash)
   }
 
   @Test
   def notGiving() = {
-    bum.store(Cash(5))
-    Assert.assertEquals(Cash(5), bum.cash)
-    Assert.assertEquals(Cash(0), bum.take(Cash(3)))
-    Assert.assertEquals(Cash(5), bum.cash)
-    Assert.assertEquals(Cash(0), bum.take(Cash(8)))
-    Assert.assertEquals(Cash(5), bum.cash)
+    val game = new StubGame
+    game.bum.store(Cash(5))
+    Assert.assertEquals(Cash(5), game.bum.cash)
+    Assert.assertEquals(Cash(0), game.bum.take(Cash(3)))
+    Assert.assertEquals(Cash(5), game.bum.cash)
+    Assert.assertEquals(Cash(0), game.bum.take(Cash(8)))
+    Assert.assertEquals(Cash(5), game.bum.cash)
   }
 
   @Test
   def notGivingFromFamily() = {
-    family.store(Cash(5))    
-    Assert.assertEquals(Cash(0), bum.cash)
-    Assert.assertEquals(Cash(5), bum.family.cash)
-    Assert.assertEquals(Cash(0), bum.take(Cash(3)))
-    Assert.assertEquals(Cash(0), bum.cash)
-    Assert.assertEquals(Cash(5), bum.family.cash)
-    bum.store(Cash(3))
-    Assert.assertEquals(Cash(3), bum.cash)
-    Assert.assertEquals(Cash(0), bum.take(Cash(8)))
-    Assert.assertEquals(Cash(3), bum.cash)
-    Assert.assertEquals(Cash(5), bum.family.cash)
+    val game = new StubGame
+    game.bum.family.store(Cash(5))    
+    Assert.assertEquals(Cash(0), game.bum.cash)
+    Assert.assertEquals(Cash(5), game.bum.family.cash)
+    Assert.assertEquals(Cash(0), game.bum.take(Cash(3)))
+    Assert.assertEquals(Cash(0), game.bum.cash)
+    Assert.assertEquals(Cash(5), game.bum.family.cash)
+    game.bum.store(Cash(3))
+    Assert.assertEquals(Cash(3), game.bum.cash)
+    Assert.assertEquals(Cash(0), game.bum.take(Cash(8)))
+    Assert.assertEquals(Cash(3), game.bum.cash)
+    Assert.assertEquals(Cash(5), game.bum.family.cash)
   }
 }

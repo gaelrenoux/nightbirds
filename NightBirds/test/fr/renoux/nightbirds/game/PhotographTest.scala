@@ -3,102 +3,103 @@ package fr.renoux.nightbirds.game
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-
 import fr.renoux.nightbirds.rules.generics.Board
 import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.generics.Family
 import fr.renoux.nightbirds.rules.specifics.cards.Photograph
 import fr.renoux.nightbirds.rules.specifics.colors.Blue
 import fr.renoux.nightbirds.rules.specifics.colors.Yellow
+import scala.util.Left
 
 class PhotographTest {
-  
-  var player : StubPlayer = new StubPlayer
-  var board : Board = null
-  
-  var photograph : Photograph = null
-  var leftCard : StubCardWithTarget = null
-  var rightCard : StubCardWithTarget = null
-  var family :Family = null
-  var otherFamily :Family = null
-  
-  @Before
-  def prepare : Unit = {
-    family = Family(Blue)
-    otherFamily = Family(Yellow)
-    board = new Board(family, otherFamily)
-    photograph = new Photograph(player, board, family)
-    leftCard = new StubCardWithTarget(player, board, otherFamily)
-    rightCard = new StubCardWithTarget(player, board, otherFamily)
-    
-    val d = board.districts.head
-    d.add(leftCard)
-    d.add(photograph)
-    d.add(rightCard)
-  }
 
   @Test
   def seesNothing() = {
-    Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
-    Assert.assertEquals(Cash(0), photograph.cash)
+    val game = new StubGame
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    game.photograph.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
   }
 
   @Test
   def seesBefore() = {
-    Assert.assertEquals(Cash(0), photograph.cash)
-    leftCard.activate
-    Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
-    Assert.assertEquals(Cash(2), photograph.cash)
+    val game = new StubGame
+    game.otherPlayer.target = game.otherCard
+    val neighbours = game.board.getNeighbours(game.photograph)
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    neighbours.early.get.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    game.photograph.activate
+    Assert.assertEquals(Cash(2), game.photograph.cash)
   }
 
   @Test
   def seesAfter() = {
-    Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
-    Assert.assertEquals(Cash(0), photograph.cash)
-    rightCard.activate()
-    photograph.witness(rightCard)
-    Assert.assertEquals(Cash(2), photograph.cash)
+    val game = new StubGame
+    game.otherPlayer.target = game.otherCard
+    val neighbours = game.board.getNeighbours(game.photograph)
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    game.photograph.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    neighbours.late.get.activate
+    Assert.assertEquals(Cash(2), game.photograph.cash)
   }
 
   @Test
   def seesBoth() = {
-    Assert.assertEquals(Cash(0), photograph.cash)
-    leftCard.activate
-    Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
-    Assert.assertEquals(Cash(2), photograph.cash)
-    rightCard.activate
-    photograph.witness(rightCard)
-    Assert.assertEquals(Cash(4), photograph.cash)
+    val game = new StubGame
+    game.otherPlayer.target = game.otherCard
+    val neighbours = game.board.getNeighbours(game.photograph)
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    neighbours.early.get.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    game.photograph.activate
+    Assert.assertEquals(Cash(2), game.photograph.cash)
+    neighbours.late.get.activate
+    Assert.assertEquals(Cash(4), game.photograph.cash)
   }
 
   @Test
-  def isTargeted() = {
-    Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.targeted(leftCard)
-    leftCard.doProceed(photograph)
-    Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.doProceed
-    Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.targeted(rightCard)
-    rightCard.doProceed(photograph)
-    Assert.assertEquals(Cash(0), photograph.cash)
+  def isTargetedOnce() = {
+    val game = new StubGame
+    game.otherPlayer.target = game.photograph
+    val neighbours = game.board.getNeighbours(game.photograph)
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    neighbours.early.get.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    game.photograph.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    game.otherPlayer.target = game.otherCard
+    neighbours.late.get.activate
+    Assert.assertEquals(Cash(2), game.photograph.cash)
+  }
+
+  @Test
+  def isTargetedTwice() = {
+    val game = new StubGame
+    game.otherPlayer.target = game.photograph
+    val neighbours = game.board.getNeighbours(game.photograph)
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    neighbours.early.get.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    game.photograph.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
+    neighbours.late.get.activate
+    Assert.assertEquals(Cash(0), game.photograph.cash)
   }
 
   @Test
   def isTargetedWithMoney() = {
-    photograph.store(Cash(14))
-    Assert.assertEquals(Cash(14), photograph.cash)
-    photograph.targeted(leftCard)
-    leftCard.doProceed(photograph)
-    Assert.assertEquals(Cash(14), photograph.cash)
-    photograph.activate
-    Assert.assertEquals(Cash(14), photograph.cash)
-    photograph.targeted(rightCard)
-    rightCard.doProceed(photograph)
-    Assert.assertEquals(Cash(14), photograph.cash)
+    val game = new StubGame
+    game.otherPlayer.target = game.photograph
+    val neighbours = game.board.getNeighbours(game.photograph)
+    game.photograph.store(Cash(14))
+    Assert.assertEquals(Cash(14), game.photograph.cash)
+    neighbours.early.get.activate
+    Assert.assertEquals(Cash(14), game.photograph.cash)
+    game.photograph.activate
+    Assert.assertEquals(Cash(14), game.photograph.cash)
+    neighbours.late.get.activate
+    Assert.assertEquals(Cash(14), game.photograph.cash)
   }
 }

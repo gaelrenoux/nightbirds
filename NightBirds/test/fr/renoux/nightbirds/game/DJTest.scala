@@ -10,74 +10,31 @@ import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.specifics.colors.Yellow
 import fr.renoux.nightbirds.rules.specifics.colors.Blue
 
-
 class DJTest {
-
-  var player : StubPlayer = new StubPlayer
-  var family: Family = null
-  var otherFamily: Family = null
-  var board : Board = null
-
-  @Before
-  def prepare = {
-    family = Family(Blue)
-    otherFamily = Family(Yellow)
-    board = new Board(family, otherFamily)
-  }
 
   @Test
   def gainMoney() = {
-    val dj = new DJ(player, board, family)
-    val district = board.districts.head
-    
-    district.add(new StubCardWithTarget(player, board, otherFamily))
-    district.add(new StubCardWithTarget(player, board, otherFamily))
-    district.add(dj)
-    district.add(new StubCardWithTarget(player, board, otherFamily))
-    
-    Assert.assertEquals(Cash(0), dj.cash)
-    dj.activate()
-    Assert.assertEquals(Cash(1), dj.cash)
-  }
+    val game = new StubGame
 
-  @Test
-  def gainMoneyAlone() = {
-    val dj = new DJ(player, board, family)
-    val district = board.districts.head
-    
-    district.add(dj)
-    
-    Assert.assertEquals(Cash(0), dj.cash)
-    dj.activate()
-    Assert.assertEquals(Cash(1), dj.cash)
+    Assert.assertEquals(Cash(0), game.dj.cash)
+    game.dj.activate()
+    Assert.assertEquals(Cash(1), game.dj.cash)
   }
 
   @Test
   def loseMoney() = {
-    val dj = new DJ(player, board, family)
-    val district = board.districts.head
-    
-    val one = new StubCardWithTarget(player, board, otherFamily)
-    val two = new StubCardWithTarget(player, board, otherFamily)
-    val three = new StubCardWithTarget(player, board, otherFamily)
-    
-    one.store(Cash(0))
-    two.store(Cash(2))
-    three.store(Cash(4))
-    Assert.assertEquals(Cash(0), one.cash)
-    Assert.assertEquals(Cash(2), two.cash)
-    Assert.assertEquals(Cash(4), three.cash)
-    
-    district.add(one)
-    district.add(two)
-    district.add(dj)
-    district.add(three)
-    
-    dj.activate()
-    
-    Assert.assertEquals(Cash(0), one.cash)
-    Assert.assertEquals(Cash(1), two.cash)
-    Assert.assertEquals(Cash(3), three.cash)
+    val game = new StubGame
+
+    val district = game.board.districtOf(game.dj)
+
+    district.cards.zipWithIndex.foreach { cpl => cpl._1.store(Cash(cpl._2)) }
+    district.cards.zipWithIndex.foreach { cpl => Assert.assertEquals(Cash(cpl._2), cpl._1.cash) }
+
+    game.dj.activate
+
+    district.cards.zipWithIndex.filter { c => game.dj != c._1 && game.bum != c._1 }.foreach { cpl =>
+      Assert.assertEquals(Cash(scala.math.max(0, cpl._2 - 1)), cpl._1.cash)
+    }
 
   }
 }

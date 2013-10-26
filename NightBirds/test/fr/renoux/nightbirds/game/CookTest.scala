@@ -11,18 +11,13 @@ import fr.renoux.nightbirds.rules.specifics.colors.Blue
 
 
 class CookTest {
-
-  var player : StubPlayer = new StubPlayer
   
   @Test
   def testCook() = {
-    val blue = Family(Blue)
-    val yellow = Family(Yellow)
-    val b = new Board(blue, yellow)
+    val game = new StubGame
     
-    val cook = new Cook(player, b, blue)
-    Assert.assertEquals(Cash(0), cook.cash)    
-    cook.activate()
-    Assert.assertEquals(Cash(2), cook.cash)    
+    Assert.assertEquals(Cash(0), game.cook.cash)    
+    game.cook.activate()
+    Assert.assertEquals(Cash(2), game.cook.cash)    
   }
 }
