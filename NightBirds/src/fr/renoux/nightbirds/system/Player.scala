@@ -2,6 +2,7 @@ package fr.renoux.nightbirds.system
 
 import fr.renoux.nightbirds.rules.generics.WithTarget
 import fr.renoux.nightbirds.rules.generics.Card
+import fr.renoux.nightbirds.rules.generics.District
 
 /* Something that will react to events */
 abstract class Player(val board: BoardView) {
@@ -9,5 +10,5 @@ abstract class Player(val board: BoardView) {
   def reactToWitness(witness: Card, source: Card, target: Option[Card]): Boolean
   def activate(source: Card): Boolean
   def getTargetForActivation(source: Card): Card
-  def playCard: Card
+  def playCard: (Card, District)
 }
