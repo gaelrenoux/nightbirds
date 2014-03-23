@@ -3,15 +3,18 @@ package fr.renoux.nightbirds.rules.generics
 abstract trait WithTarget extends Card {
 
   /** Activate this card's power on another */
-  final def activate() = {
-    val target = callbacks.getTargetForActivation(this)
-    if (target.targeted(this)) {
-      this.doProceed(target)
+  final def activate() = callbacks.activateWithTarget(this) match {
 
-      board.getNeighbours(this).remove(target)
-    } else {
-      Neighbours(None, None)
-    }
+    case None => DeclinedActivation
+
+    case Some(target) =>
+      if (target.targeted(this)) {
+        this.doProceed(target)
+        SuccessfulActivation(this, Some(target), board.getNeighbours(this).remove(target))
+      } else {
+        BlockedActivation(this, target)
+      }
+
   }
 
   protected def doProceed(target: Card)

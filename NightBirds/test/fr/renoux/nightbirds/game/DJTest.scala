@@ -13,39 +13,28 @@ import fr.renoux.nightbirds.rules.specifics.colors.Blue
 
 class DJTest {
 
-  var player : StubPlayer = new StubPlayer
-  var family: Family = null
-  var otherFamily: Family = null
-  var board : Board = null
+  var game : StubGame = null
 
   @Before
   def prepare = {
-    family = Family(Blue)
-    otherFamily = Family(Yellow)
-    board = new Board(family, otherFamily)
+    game = new StubGame
   }
 
   @Test
   def gainMoney() = {
-    val dj = new DJ(player, board, family)
-    val district = board.districts.head
-    
-    district.add(new StubCardWithTarget(player, board, otherFamily))
-    district.add(new StubCardWithTarget(player, board, otherFamily))
-    district.add(dj)
-    district.add(new StubCardWithTarget(player, board, otherFamily))
+    val stub1 = game.district(0).addStub()
+    val stub2 = game.district(0).addStub()
+    val dj = game.district(0).addDj()
+    val stub3 = game.district(0).addStub()
     
     Assert.assertEquals(Cash(0), dj.cash)
-    dj.activate()
+    dj.reveal()
     Assert.assertEquals(Cash(1), dj.cash)
   }
 
   @Test
   def gainMoneyAlone() = {
-    val dj = new DJ(player, board, family)
-    val district = board.districts.head
-    
-    district.add(dj)
+    val dj = game.district(0).addDj()
     
     Assert.assertEquals(Cash(0), dj.cash)
     dj.activate()
@@ -54,30 +43,24 @@ class DJTest {
 
   @Test
   def loseMoney() = {
-    val dj = new DJ(player, board, family)
-    val district = board.districts.head
+    val stub1 = game.district(0).addStub()
+    val stub2 = game.district(0).addStub()
+    val dj = game.district(0).addDj()
+    val stub3 = game.district(0).addStub()
     
-    val one = new StubCardWithTarget(player, board, otherFamily)
-    val two = new StubCardWithTarget(player, board, otherFamily)
-    val three = new StubCardWithTarget(player, board, otherFamily)
+    stub1.store(Cash(0))
+    stub2.store(Cash(2))
+    stub3.store(Cash(4))
     
-    one.store(Cash(0))
-    two.store(Cash(2))
-    three.store(Cash(4))
-    Assert.assertEquals(Cash(0), one.cash)
-    Assert.assertEquals(Cash(2), two.cash)
-    Assert.assertEquals(Cash(4), three.cash)
+    Assert.assertEquals(Cash(0), stub1.cash)
+    Assert.assertEquals(Cash(2), stub2.cash)
+    Assert.assertEquals(Cash(4), stub3.cash)
     
-    district.add(one)
-    district.add(two)
-    district.add(dj)
-    district.add(three)
+    dj.reveal()
     
-    dj.activate()
-    
-    Assert.assertEquals(Cash(0), one.cash)
-    Assert.assertEquals(Cash(1), two.cash)
-    Assert.assertEquals(Cash(3), three.cash)
+    Assert.assertEquals(Cash(0), stub1.cash)
+    Assert.assertEquals(Cash(1), stub2.cash)
+    Assert.assertEquals(Cash(3), stub3.cash)
 
   }
 }

@@ -5,11 +5,15 @@ trait Callbacks {
   
   def reactToTarget(target: Card, source: Card): Boolean
   
-  def reactToWitness(witness: Card, source: Card, target: Option[Card]): Boolean
+  def reactToWitness(activation : SuccessfulActivation, witness : Card): Boolean
   
-  def activate(source: Card): Boolean
+  def activateWithTarget(source: WithTarget): Option[Card]
   
-  def getTargetForActivation(source: Card): Card
+  def activateWithTargetWithInfo[Info](source : WithTargetWithInfo[Info]) : Option[(Card, Info)]
   
-  def getMoreForActivation[More](source: WithTargetAndMore[More]): More
+  def activateWithoutTarget(source: WithoutTarget) : Boolean
+  
+  def activateWithoutTargetWithInfo[Info](source : WithoutTargetWithInfo[Info]) : Option[Info]
+  
+  def see(seen : Card)
 }

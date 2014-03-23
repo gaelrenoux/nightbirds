@@ -12,7 +12,7 @@ import fr.renoux.nightbirds.rules.generics.Cash
 
 class WhoreTest {
 
-  var player: StubPlayer = new StubPlayer
+  var player: StubPlayer = new StubPlayer(new Board)
 
   @Test
   def testWhore() = {

@@ -19,7 +19,7 @@ class Burglar(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with With
     annoyed = 0
   }
 
-  override def doTargeted(source: Card) = {
+  override def doMandatoryTargeted(source: Card) = {
     if (cash > Cash(0)) {
       take(Cash(1))
     } else {

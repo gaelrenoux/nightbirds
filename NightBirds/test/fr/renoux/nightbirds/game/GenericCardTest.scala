@@ -11,7 +11,7 @@ import fr.renoux.nightbirds.rules.specifics.colors.Blue
 
 class GenericCardTest {
   
-  var player : StubPlayer = new StubPlayer
+  var player : StubPlayer = new StubPlayer(new Board)
   var card : Card = null
   var family :Family = null
   var otherCard : Card = null

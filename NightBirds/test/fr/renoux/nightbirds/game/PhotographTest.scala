@@ -3,17 +3,18 @@ package fr.renoux.nightbirds.game
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-
 import fr.renoux.nightbirds.rules.generics.Board
 import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.generics.Family
 import fr.renoux.nightbirds.rules.specifics.cards.Photograph
 import fr.renoux.nightbirds.rules.specifics.colors.Blue
 import fr.renoux.nightbirds.rules.specifics.colors.Yellow
+import fr.renoux.nightbirds.rules.generics.SuccessfulActivation
+import fr.renoux.nightbirds.rules.generics.Neighbours
 
 class PhotographTest {
   
-  var player : StubPlayer = new StubPlayer
+  var player : StubPlayer = new StubPlayer(new Board)
   var board : Board = null
   
   var photograph : Photograph = null
@@ -59,7 +60,7 @@ class PhotographTest {
     photograph.activate
     Assert.assertEquals(Cash(0), photograph.cash)
     rightCard.activate()
-    photograph.witness(rightCard)
+    photograph.witness(new SuccessfulActivation( rightCard, None, Neighbours(Some(photograph), None)))
     Assert.assertEquals(Cash(2), photograph.cash)
   }
 
@@ -71,7 +72,7 @@ class PhotographTest {
     photograph.activate
     Assert.assertEquals(Cash(2), photograph.cash)
     rightCard.activate
-    photograph.witness(rightCard)
+    photograph.witness(new SuccessfulActivation( rightCard, None, Neighbours(Some(photograph), None)))
     Assert.assertEquals(Cash(4), photograph.cash)
   }
 

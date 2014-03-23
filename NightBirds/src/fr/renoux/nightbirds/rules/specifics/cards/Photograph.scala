@@ -8,19 +8,13 @@ import fr.renoux.nightbirds.rules.generics.Card
 import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.generics.Callbacks
 
-
 /** Photograph : earns two for each neighbour that does (or have done) something without targeting him */
 class Photograph(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with WithoutTarget {
 
   var jerk: Option[Card] = None
 
   override def doProceed() = {
-    val neighbours = board.getNeighbours(this)
-    neighbours.early.foreach { c =>
-      if (c.hasPlayed && (jerk == None || c != jerk.get)) {
-        store(Cash(2))
-      }
-    }
+    //does everything as a witness, so nothing here
   }
 
   override def doTargeted(source: Card) = {
@@ -29,6 +23,11 @@ class Photograph(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with W
   }
 
   override def doWitness(source: Card) = {
-    store(Cash(2))
+    jerk match {
+      case None => store(Cash(2))
+      case Some(guy) if guy != source => store(Cash(2))
+      case _ => //do nothing
+    }
+    true
   }
 }

@@ -6,7 +6,6 @@ import fr.renoux.nightbirds.rules.generics.Board
 import fr.renoux.nightbirds.rules.generics.Card
 import fr.renoux.nightbirds.rules.generics.Callbacks
 
-
 class Cop(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with WithTarget {
 
   override def doTargeted(source: Card) = {
@@ -22,6 +21,9 @@ class Cop(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with WithTarg
     if (source.isReprehensible) {
       source.confiscate()
       f.hold(source)
+      false
+    } else {
+      true
     }
   }
 

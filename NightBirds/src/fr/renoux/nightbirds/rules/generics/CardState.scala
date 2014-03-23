@@ -4,8 +4,6 @@ trait CardState {
 
   def family: Family
 
-  /* Card state */
-
   /** This card's personal cash */
   private var _cash: Cash = Cash(0)
   final def cash = _cash
@@ -15,17 +13,15 @@ trait CardState {
     _cash += amount
   }
 
-  /** Take an amount from this card. If not enough cash, takes from the family. Returns how much can be taken. */
+  /** Take an amount from this card. If not enough cash, takes from the family. Returns how much could be taken. */
   def take(amount: Cash): Cash = {
-    if (amount <= _cash) {
-      /*enough money on card */
-      _cash = (cash - amount).remaining
-      amount
+    val transaction = cash - amount
+    _cash = transaction.remaining
+    
+    if (!transaction.successful) {
+      transaction.subtracted + family.take(transaction.notSubtracted)
     } else {
-      /* not enough money */
-      val fromCard = _cash
-      _cash = Cash(0)
-      fromCard + family.take((amount - fromCard).remaining)
+      amount
     }
   }
 
@@ -48,6 +44,7 @@ trait CardState {
   /** Hit this card. Ouch. */
   final def hit() = {
     confiscate()
+    /* he's going to miss next night */
     _hurtLevel = 2
   }
 
@@ -59,7 +56,7 @@ trait CardState {
   /** Who holds this character prisoner ?*/
   private var _captor: Option[Family] = None
   final def captor = _captor
-  final def held = (_captor == None)
+  final def held = (_captor != None)
 
   /** Put this card in prison */
   def hold(captor: Family) = {

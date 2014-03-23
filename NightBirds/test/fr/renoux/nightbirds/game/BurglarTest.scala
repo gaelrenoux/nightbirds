@@ -9,65 +9,76 @@ import fr.renoux.nightbirds.rules.specifics.cards.Burglar
 import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.specifics.colors.Yellow
 import fr.renoux.nightbirds.rules.specifics.colors.Blue
+import fr.renoux.nightbirds.rules.generics.SuccessfulActivation
+import fr.renoux.nightbirds.rules.generics.Neighbours
 
 class BurglarTest {
   
-  var player : StubPlayer = new StubPlayer
-  var burglar : Burglar = null
-  var otherCard : StubCardWithTarget = null
-  var family :Family = null
-  var otherFamily :Family = null
+  var game : StubGame = null
   
   @Before
   def prepare = {
-    family = Family(Blue)
-    otherFamily = Family(Yellow)
-    val b = new Board(family, otherFamily)
-    burglar = new Burglar(player, b, family)
-    otherCard = new StubCardWithTarget(player, b, otherFamily)
+	game = new StubGame
   }
 
   @Test
   def undisturbed() = {
+    val before = game.district(0).addStub()
+    val burglar = game.district(0).addBurglar()
+    val after = game.district(0).addStub()
+    
     Assert.assertEquals(Cash(0), burglar.cash)
-    burglar.activate
+    before.reveal
+    burglar.reveal
+    after.reveal
     Assert.assertEquals(Cash(4), burglar.cash)
   }
 
   @Test
   def disturbedBefore() = {
+    val before = game.district(0).addStub(true)
+    val burglar = game.district(0).addBurglar()
+    val after = game.district(0).addStub()
+    game.player.target = burglar
+    
     Assert.assertEquals(Cash(0), burglar.cash)
-    burglar.targeted(otherCard)
+    before.reveal
     Assert.assertEquals(Cash(0), burglar.cash)
-    burglar.activate()
+    burglar.reveal()
+    Assert.assertEquals(Cash(3), burglar.cash)
+    after.reveal
     Assert.assertEquals(Cash(3), burglar.cash)
   }
 
   @Test
   def disturbedAfter() = {
+    val before = game.district(0).addStub()
+    val burglar = game.district(0).addBurglar()
+    val after = game.district(0).addStub(true)
+    game.player.target = burglar
+    
     Assert.assertEquals(Cash(0), burglar.cash)
-    burglar.activate
+    before.reveal
+    Assert.assertEquals(Cash(0), burglar.cash)
+    burglar.reveal
     Assert.assertEquals(Cash(4), burglar.cash)
-    burglar.targeted(otherCard)
+    after.reveal()
     Assert.assertEquals(Cash(3), burglar.cash)
   }
 
   @Test
   def disturbedBoth() = {
+    val before = game.district(0).addStub(true)
+    val burglar = game.district(0).addBurglar()
+    val after = game.district(0).addStub(true)
+    game.player.target = burglar
+    
     Assert.assertEquals(Cash(0), burglar.cash)
-    burglar.targeted(otherCard)
+    before.reveal
     Assert.assertEquals(Cash(0), burglar.cash)
-    burglar.activate
+    burglar.reveal
     Assert.assertEquals(Cash(3), burglar.cash)
-    burglar.targeted(otherCard)
+    after.reveal()
     Assert.assertEquals(Cash(2), burglar.cash)
-  }
-
-  @Test
-  def onlyWitness() = {
-    Assert.assertEquals(Cash(0), burglar.cash)
-    burglar.activate
-    burglar.witness(otherCard)
-    Assert.assertEquals(Cash(4), burglar.cash)
   }
 }
