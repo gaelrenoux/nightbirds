@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ BumTest.class, BurglarTest.class, CookTest.class, DJTest.class,
-		GenericCardTest.class, PhotographTest.class, WhoreTest.class })
+		GenericCardTest.class, PhotographTest.class, SkinheadTest.class, ThugTest.class, WhoreTest.class })
 public class AllCardTestSuite {
 
 }

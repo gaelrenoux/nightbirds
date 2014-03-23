@@ -13,7 +13,7 @@ import fr.renoux.nightbirds.rules.generics.Callbacks
 class Thug(c: Callbacks, b: Board, f: Family) extends Card(c, b, f, Guts(3), Illegal) with WithTarget {
   override def doProceed(target: Card) = {
     if (target.guts < this.guts) {
-      store(Cash(this.guts.value - target.guts.value))
+      store(target.take(Cash(this.guts.value - target.guts.value)))
     } else {
       hit()
     }

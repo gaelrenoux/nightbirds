@@ -11,95 +11,87 @@ import fr.renoux.nightbirds.rules.specifics.colors.Blue
 import fr.renoux.nightbirds.rules.specifics.colors.Yellow
 import fr.renoux.nightbirds.rules.generics.SuccessfulActivation
 import fr.renoux.nightbirds.rules.generics.Neighbours
+import fr.renoux.nightbirds.rules.specifics.cards.Photograph
+import fr.renoux.nightbirds.rules.generics.Card
 
 class PhotographTest {
-  
-  var player : StubPlayer = new StubPlayer(new Board)
-  var board : Board = null
-  
-  var photograph : Photograph = null
-  var leftCard : StubCardWithTarget = null
-  var rightCard : StubCardWithTarget = null
-  var family :Family = null
-  var otherFamily :Family = null
-  
+
+  var game: StubGame = null
+
+  var leftCard: Card = null
+  var rightCard: Card = null
+  var photograph: Photograph = null
+
   @Before
-  def prepare : Unit = {
-    family = Family(Blue)
-    otherFamily = Family(Yellow)
-    board = new Board(family, otherFamily)
-    photograph = new Photograph(player, board, family)
-    leftCard = new StubCardWithTarget(player, board, otherFamily)
-    rightCard = new StubCardWithTarget(player, board, otherFamily)
-    
-    val d = board.districts.head
-    d.add(leftCard)
-    d.add(photograph)
-    d.add(rightCard)
+  def prepare = {
+    game = new StubGame
+
+    leftCard = game.district(0).addStub(true)
+    photograph = game.district(0).addPhotograph()
+    rightCard = game.district(0).addStub(true)
   }
 
   @Test
   def seesNothing() = {
     Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
+    photograph.reveal()
     Assert.assertEquals(Cash(0), photograph.cash)
   }
 
   @Test
   def seesBefore() = {
+    game.player.target = game.district(1).addStub()
     Assert.assertEquals(Cash(0), photograph.cash)
-    leftCard.activate
+    leftCard.reveal()
     Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
+    photograph.reveal()
     Assert.assertEquals(Cash(2), photograph.cash)
   }
 
   @Test
   def seesAfter() = {
+    game.player.target = game.district(1).addStub()
     Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
+    photograph.reveal()
     Assert.assertEquals(Cash(0), photograph.cash)
-    rightCard.activate()
-    photograph.witness(new SuccessfulActivation( rightCard, None, Neighbours(Some(photograph), None)))
+    rightCard.reveal()
     Assert.assertEquals(Cash(2), photograph.cash)
   }
 
   @Test
   def seesBoth() = {
+    game.player.target = game.district(1).addStub()
     Assert.assertEquals(Cash(0), photograph.cash)
-    leftCard.activate
+    leftCard.reveal()
     Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.activate
+    photograph.reveal()
     Assert.assertEquals(Cash(2), photograph.cash)
-    rightCard.activate
-    photograph.witness(new SuccessfulActivation( rightCard, None, Neighbours(Some(photograph), None)))
+    rightCard.reveal()
     Assert.assertEquals(Cash(4), photograph.cash)
   }
 
   @Test
   def isTargeted() = {
+    game.player.target = photograph
     Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.targeted(leftCard)
-    leftCard.doProceed(photograph)
+    leftCard.reveal()
     Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.doProceed
+    photograph.reveal()
     Assert.assertEquals(Cash(0), photograph.cash)
-    photograph.targeted(rightCard)
-    rightCard.doProceed(photograph)
+    rightCard.reveal()
     Assert.assertEquals(Cash(0), photograph.cash)
   }
 
   @Test
   def isTargetedWithMoney() = {
+    game.player.target = photograph
     photograph.store(Cash(14))
     Assert.assertEquals(Cash(14), photograph.cash)
-    photograph.targeted(leftCard)
-    leftCard.doProceed(photograph)
+    leftCard.reveal()
     Assert.assertEquals(Cash(14), photograph.cash)
-    photograph.activate
+    photograph.reveal()
     Assert.assertEquals(Cash(14), photograph.cash)
-    photograph.targeted(rightCard)
-    rightCard.doProceed(photograph)
+    rightCard.reveal()
     Assert.assertEquals(Cash(14), photograph.cash)
   }
 }

@@ -16,6 +16,11 @@ import fr.renoux.nightbirds.rules.specifics.cards.DJ
 import fr.renoux.nightbirds.rules.specifics.cards.Cop
 import fr.renoux.nightbirds.rules.specifics.cards.Dealer
 import fr.renoux.nightbirds.rules.generics.Card
+import fr.renoux.nightbirds.rules.specifics.cards.Photograph
+import fr.renoux.nightbirds.rules.specifics.cards.Skinhead
+import fr.renoux.nightbirds.rules.generics.Guts
+import fr.renoux.nightbirds.rules.specifics.cards.Taxi
+import fr.renoux.nightbirds.rules.specifics.cards.Thug
 
 class StubGame {
 
@@ -60,11 +65,32 @@ class StubGame {
       board.districts(i).add(card)
       card
     }
-    def addStub(targeted: Boolean = false) = {
+    def addPhotograph() = {
+      val card = new Photograph(player, board, blue)
+      board.districts(i).add(card)
+      card
+    }
+    def addSkinhead() = {
+      val card = new Skinhead(player, board, blue)
+      board.districts(i).add(card)
+      card
+    }
+    def addTaxi() = {
+      val card = new Taxi(player, board, blue)
+      board.districts(i).add(card)
+      card
+    }
+    def addThug() = {
+      val card = new Thug(player, board, blue)
+      board.districts(i).add(card)
+      card
+    }
+
+    def addStub(targeted: Boolean = false, guts : Guts = Guts(1)) = {
       val card = if (targeted) {
-        new StubCardWithTarget(player, board, blue)
+        new StubCardWithTarget(player, board, blue, guts)
       } else {
-        new StubCardWithoutTarget(player, board, blue)
+        new StubCardWithoutTarget(player, board, blue, guts)
       }
       board.districts(i).add(card)
       card

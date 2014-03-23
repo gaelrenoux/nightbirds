@@ -12,9 +12,7 @@ import fr.renoux.nightbirds.rules.generics.District
 import fr.renoux.nightbirds.rules.generics.Board
 import fr.renoux.nightbirds.rules.specifics.cards.Taxi
 
-class StubPlayer(board : Board) extends Player {
-
-  var target : Card = null
+class StubPlayer(board : Board, var target: Card = null) extends Player {
 
   override def reactToTarget(target: Card, source: Card) = true
 

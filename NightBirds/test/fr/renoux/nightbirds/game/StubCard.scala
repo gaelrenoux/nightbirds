@@ -23,7 +23,7 @@ class StubCardWithoutTarget(c: Callbacks, b: Board, f: Family, g: Guts = Guts(1)
 class StubCardWithoutTargetWithInfo(c: Callbacks, b: Board, f: Family, g: Guts = Guts(1), illegal: Legality = Illegal)
   extends Card(c, b, f, g, Illegal) with WithoutTargetWithInfo[Any] {
 
-  def doProceed(more: Any) = {Neighbours(None, None)}
+  def doProceed(more: Any) = {}
   
 }
 

@@ -1,6 +1,9 @@
 package fr.renoux.nightbirds.rules.generics
 
 case class Cash(val amount: Int) extends Ordered[Cash] {
+  if (amount < 0) {
+    throw new IllegalArgumentException
+  }
 
   override def compare(that: Cash) = this.amount.compare(that.amount)
 

@@ -22,7 +22,7 @@ class Photograph(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with W
     true
   }
 
-  override def doWitness(source: Card) = {
+  override def doMandatoryWitness(source: Card) = {
     jerk match {
       case None => store(Cash(2))
       case Some(guy) if guy != source => store(Cash(2))

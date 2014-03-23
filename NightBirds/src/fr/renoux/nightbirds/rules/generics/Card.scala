@@ -18,7 +18,11 @@ abstract class Card(
   /** How much will he pay for drug ? */
   final def addiction = Cash(guts.value + 1);
 
-  /** Has he played his turn yet ? */
+  /** Has it been revealed yet ? */
+  var _isRevealed = false
+  final def isRevealed = _isRevealed
+  
+  /** Has it dome something this turn ? */
   var _hasPlayed = false
   final def hasPlayed = _hasPlayed
 
@@ -27,12 +31,15 @@ abstract class Card(
     doReset()
     recover()
     _hasPlayed = false
+    _isRevealed = false
   }
 
   /* Actions on or with this card */
 
   /** Main stuff : revealing the card and doing whatever we need */
   def reveal(): Unit = {
+    _isRevealed = true
+    
     /* if he has been a witness, do the corresponding actions */
     _delayedWitnesses.reverse.foreach { witness(_) }
     _delayedWitnesses = Nil
@@ -61,7 +68,7 @@ abstract class Card(
   final def witness(activation: SuccessfulActivation): Boolean = {
 
     /* first case : card is already revealed */
-    if (_hasPlayed) {
+    if (_isRevealed) {
       val mw = doMandatoryWitness(activation.source)
 
       if (callbacks.reactToWitness(activation, this))
