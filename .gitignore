@@ -2,3 +2,5 @@
 /.metadata
 /RemoteSystemsTempFiles
 /NightBirds/bin
+/NightBirds/.cache
+/Simulator/.cache
