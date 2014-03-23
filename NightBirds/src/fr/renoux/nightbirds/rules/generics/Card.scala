@@ -100,5 +100,9 @@ abstract class Card(
 
   /** Specific reset for a card. Nothing in the general case. */
   protected def doReset() = {}
+  
+  override def toString() = {
+    this.getClass().getSimpleName() + " (" + this.cash  + ")" 
+  }
 
 }

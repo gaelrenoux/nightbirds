@@ -11,6 +11,7 @@ import fr.renoux.nightbirds.rules.generics.Callbacks
 class DJ(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with WithoutTarget {
   override def doProceed() = {
     store(Cash(1))
-    b.districtOf(this).cards.filter { _ != this }.foreach { _.take(Cash(1)) }
+    val dCards = b.districtOf(this).cards.filter { _ != this }
+    dCards.foreach { _.take(Cash(1)) }
   }
 }
