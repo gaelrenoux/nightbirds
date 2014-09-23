@@ -1,24 +1,22 @@
 package fr.renoux.nightbirds.game
 
+import fr.renoux.nightbirds.playercontract.Black
+import fr.renoux.nightbirds.playercontract.Blue
+import fr.renoux.nightbirds.playercontract.Green
+import fr.renoux.nightbirds.playercontract.Orange
+import fr.renoux.nightbirds.playercontract.White
+import fr.renoux.nightbirds.playercontract.Yellow
 import fr.renoux.nightbirds.rules.generics.Board
-import fr.renoux.nightbirds.rules.specifics.cards.Photograph
 import fr.renoux.nightbirds.rules.generics.Family
-import fr.renoux.nightbirds.rules.specifics.colors.Yellow
-import fr.renoux.nightbirds.rules.specifics.colors.Blue
-import fr.renoux.nightbirds.rules.specifics.colors.Black
-import fr.renoux.nightbirds.rules.specifics.colors.Green
-import fr.renoux.nightbirds.rules.specifics.colors.Orange
-import fr.renoux.nightbirds.rules.specifics.colors.White
+import fr.renoux.nightbirds.rules.generics.Guts
 import fr.renoux.nightbirds.rules.specifics.cards.Bum
 import fr.renoux.nightbirds.rules.specifics.cards.Burglar
 import fr.renoux.nightbirds.rules.specifics.cards.Cook
-import fr.renoux.nightbirds.rules.specifics.cards.DJ
 import fr.renoux.nightbirds.rules.specifics.cards.Cop
+import fr.renoux.nightbirds.rules.specifics.cards.Dj
 import fr.renoux.nightbirds.rules.specifics.cards.Dealer
-import fr.renoux.nightbirds.rules.generics.Card
 import fr.renoux.nightbirds.rules.specifics.cards.Photograph
 import fr.renoux.nightbirds.rules.specifics.cards.Skinhead
-import fr.renoux.nightbirds.rules.generics.Guts
 import fr.renoux.nightbirds.rules.specifics.cards.Taxi
 import fr.renoux.nightbirds.rules.specifics.cards.Thug
 
@@ -61,7 +59,7 @@ class StubGame {
       card
     }
     def addDj() = {
-      val card = new DJ(player, board, blue)
+      val card = new Dj(player, board, blue)
       board.districts(i).add(card)
       card
     }
@@ -86,7 +84,7 @@ class StubGame {
       card
     }
 
-    def addStub(targeted: Boolean = false, guts : Guts = Guts(1)) = {
+    def addStub(targeted: Boolean = false, guts: Guts = Guts(1)) = {
       val card = if (targeted) {
         new StubCardWithTarget(player, board, blue, guts)
       } else {

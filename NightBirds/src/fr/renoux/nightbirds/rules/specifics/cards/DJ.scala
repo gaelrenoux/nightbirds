@@ -8,7 +8,7 @@ import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.generics.Callbacks
 
 /** DJ : earns 1, everyone in the district loses two */
-class DJ(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with WithoutTarget {
+class Dj(c: Callbacks, b: Board, f: Family) extends Card(c, b, f) with WithoutTarget {
   override def doProceed() = {
     store(Cash(1))
     val dCards = b.districtOf(this).cards.filter { _ != this }

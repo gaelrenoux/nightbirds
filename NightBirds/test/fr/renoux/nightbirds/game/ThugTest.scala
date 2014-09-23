@@ -3,17 +3,8 @@ package fr.renoux.nightbirds.game
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import fr.renoux.nightbirds.rules.generics.Board
+
 import fr.renoux.nightbirds.rules.generics.Cash
-import fr.renoux.nightbirds.rules.generics.Family
-import fr.renoux.nightbirds.rules.specifics.cards.Photograph
-import fr.renoux.nightbirds.rules.specifics.colors.Blue
-import fr.renoux.nightbirds.rules.specifics.colors.Yellow
-import fr.renoux.nightbirds.rules.generics.SuccessfulActivation
-import fr.renoux.nightbirds.rules.generics.Neighbours
-import fr.renoux.nightbirds.rules.specifics.cards.Photograph
-import fr.renoux.nightbirds.rules.generics.Card
-import fr.renoux.nightbirds.rules.specifics.cards.Skinhead
 import fr.renoux.nightbirds.rules.generics.Guts
 import fr.renoux.nightbirds.rules.specifics.cards.Thug
 

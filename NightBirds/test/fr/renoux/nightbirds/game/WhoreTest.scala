@@ -2,13 +2,14 @@ package fr.renoux.nightbirds.game
 
 import org.junit.Assert
 import org.junit.Test
+
+import fr.renoux.nightbirds.playercontract.Blue
+import fr.renoux.nightbirds.playercontract.Yellow
 import fr.renoux.nightbirds.rules.generics.Board
-import fr.renoux.nightbirds.rules.generics.Family
-import fr.renoux.nightbirds.rules.specifics.cards.Whore
-import fr.renoux.nightbirds.rules.specifics.colors.Yellow
-import fr.renoux.nightbirds.rules.specifics.colors.Blue
-import fr.renoux.nightbirds.rules.specifics.cards.Cook
 import fr.renoux.nightbirds.rules.generics.Cash
+import fr.renoux.nightbirds.rules.generics.Family
+import fr.renoux.nightbirds.rules.specifics.cards.Cook
+import fr.renoux.nightbirds.rules.specifics.cards.Whore
 
 class WhoreTest {
 

@@ -1,5 +1,7 @@
 package fr.renoux.nightbirds.rules.generics
 
+import fr.renoux.nightbirds.playercontract.Color
+
 case class Family(val color: Color) {
 
   var internalCash: Cash = Cash(0)

@@ -3,10 +3,10 @@ package fr.renoux.nightbirds.simulation
 import fr.renoux.nightbirds.system.Player
 import fr.renoux.nightbirds.rules.generics.Board
 import fr.renoux.nightbirds.rules.generics.Family
-import fr.renoux.nightbirds.rules.specifics.colors.Orange
-import fr.renoux.nightbirds.rules.specifics.colors.Black
-import fr.renoux.nightbirds.rules.specifics.colors.Yellow
-import fr.renoux.nightbirds.rules.specifics.colors.Blue
+import fr.renoux.nightbirds.playercontract.Yellow
+import fr.renoux.nightbirds.playercontract.Blue
+import fr.renoux.nightbirds.playercontract.Orange
+import fr.renoux.nightbirds.playercontract.Black
 
 class Simulation(playersNb : Int) {
   

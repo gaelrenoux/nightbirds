@@ -7,8 +7,6 @@ import fr.renoux.nightbirds.rules.generics.Board
 import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.generics.Family
 import fr.renoux.nightbirds.rules.specifics.cards.Photograph
-import fr.renoux.nightbirds.rules.specifics.colors.Blue
-import fr.renoux.nightbirds.rules.specifics.colors.Yellow
 import fr.renoux.nightbirds.rules.generics.SuccessfulActivation
 import fr.renoux.nightbirds.rules.generics.Neighbours
 import fr.renoux.nightbirds.rules.specifics.cards.Photograph

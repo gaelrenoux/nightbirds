@@ -7,7 +7,7 @@ import fr.renoux.nightbirds.rules.generics.Board
 import fr.renoux.nightbirds.rules.generics.Family
 import fr.renoux.nightbirds.rules.generics.Cash
 import fr.renoux.nightbirds.rules.generics.Card
-import fr.renoux.nightbirds.rules.specifics.colors.Blue
+import fr.renoux.nightbirds.playercontract.Blue
 
 class GenericCardTest {
   
