@@ -1,0 +1,3 @@
+Transformer les cartes en purs objets. L'état à modifier est un paramètre implicite. Le projet de base devient le projet rules, qui peut servir de contrat directement (et ça permet aux joueurs de profiter des méthodes utilitaires).
+
+Sur le projet engine, il faudra bien cloner tous les éléments avant de les transférer aux joueurs.

@@ -1,4 +1,4 @@
-package fr.renoux.nightbirds.playercontract
+package fr.renoux.nightbirds.rules
 
 sealed abstract class Activation
 

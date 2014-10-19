@@ -1,13 +1,13 @@
 package fr.renoux.nightbirds.players
 
-import fr.renoux.nightbirds.playercontract.PlayerLike.Initializer
-import fr.renoux.nightbirds.playercontract.Board
-import fr.renoux.nightbirds.playercontract.PlayerLike
-import fr.renoux.nightbirds.playercontract.CardType
-import fr.renoux.nightbirds.playercontract.Activation
-import fr.renoux.nightbirds.playercontract.Status
-import fr.renoux.nightbirds.playercontract.Target
-import fr.renoux.nightbirds.playercontract.Color
+import fr.renoux.nightbirds.rules.PlayerLike.Initializer
+import fr.renoux.nightbirds.rules.Board
+import fr.renoux.nightbirds.rules.PlayerLike
+import fr.renoux.nightbirds.rules.CardType
+import fr.renoux.nightbirds.rules.Activation
+import fr.renoux.nightbirds.rules.Status
+import fr.renoux.nightbirds.rules.Target
+import fr.renoux.nightbirds.rules.Color
 
 abstract class BasePlayer extends PlayerLike {
 
