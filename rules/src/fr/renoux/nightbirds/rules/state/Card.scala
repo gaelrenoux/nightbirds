@@ -10,6 +10,11 @@ class Card(val family: Family)(val cardType: CardType) {
 
   var _revealed = false
   def revealed = _revealed
+  
+  def reveal() = {
+    _revealed = true
+    resetPublicState()
+  }
 
   def take(amount: Cash) = {
     val t = _cash - amount

@@ -28,9 +28,13 @@ class Family(val color: Color) {
     resetPublicState()
   }
 
-  def discard(card: Card) = {
-    _hand = _hand - card
-    resetPublicState()
+  /** Returns true if the card was able to be discarded */
+  def discard(card: Card) : Boolean = {
+    if (_hand.contains(card)) {
+      _hand = _hand - card
+      resetPublicState()
+      true
+    } else false
   }
 
   def resetHand = {

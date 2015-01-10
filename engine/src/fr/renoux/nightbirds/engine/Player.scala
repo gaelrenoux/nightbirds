@@ -6,6 +6,8 @@ import fr.renoux.nightbirds.rules.cardtypes.Color
 import fr.renoux.nightbirds.rules.state.District
 import fr.renoux.nightbirds.rules.state.Card
 import fr.renoux.nightbirds.rules.state.GamePublicState
+import fr.renoux.nightbirds.rules.state.CardPublicState
+import fr.renoux.nightbirds.rules.state.Neighbour
 
 /** Not trusted. He returns stuff but can't modify the GameState */
 abstract class Player {
@@ -14,6 +16,6 @@ abstract class Player {
   /** Returns a card and a district to put it in */
   def place(gs: GamePublicState): (Card, District)
 
-  /** Returns a card to activate and eventually a target to go wih it */
-  def activate(gs: GamePublicState): (Card, Option[Card])
+  /** Returns a choice to activate a card, and optionally a target to go wih it */
+  def activate(gs: GamePublicState, district: District, column: Int): (Boolean, Option[Neighbour])
 }
