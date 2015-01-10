@@ -4,21 +4,37 @@ import fr.renoux.nightbirds.rules.cardtypes.Color
 
 /**
  * A family, which is associated to a player. A family has cash, cards and stuff.
- *
- *  Immutable.
  */
-class Family(val color: Color, val cash: Cash = Cash(0), val prison: Set[Card] = Set[Card]()) {
+class Family(val color: Color) extends PublicFamily {
 
-  def take(amount: Cash) = if (amount.isZero || cash.isZero) { this } else {
+  val cards = color.makeCards(this)
+
+  private var _cash: Cash = Cash(0)
+  def cash = _cash
+
+  private var _hand: Set[Card] = cards
+  def handSize = _hand.size
+
+  def take(amount: Cash) = {
     val t = cash - amount
-    new Family(color, t.remaining, prison)
+    _cash = t.remaining
+    t
   }
 
   /** Store an amount of cash in this famHavingCashily */
-  def store(amount: Cash) = if (amount.isZero) this else new Family(color, cash + amount, prison)
+  def store(amount: Cash) = { _cash += amount }
 
-  def hold(target: Card) = new Family(color, cash, prison + target)
+  def resetHand = {
+    _hand = cards
+  }
 
-  /** release a card and get its bail money */
-  def release(target: Card) = new Family(color, cash + target.bail, prison - target)
+  /** Returns the family with "fog of war" : only public information */
+  def public = this.asInstanceOf[PublicFamily]
+}
+
+/** only public informations */
+trait PublicFamily {
+  val color: Color
+  def handSize: Int
+  def cash: Cash
 }

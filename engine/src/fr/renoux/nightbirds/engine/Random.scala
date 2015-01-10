@@ -7,7 +7,9 @@ class Random {
 
   def pick[T](source: Seq[T]): T = source(nextInt(source.length))
 
-  def pick[T](source: Iterable[T], count: Int): Iterable[T] =
-    wrapped.shuffle(source).take(count)
+  /** Pick in a random order from the source element */
+  def pick[T](source: Iterable[T], count: Int): Seq[T] = shuffle(source).take(count)
+
+  def shuffle[T](source: Iterable[T]) = wrapped.shuffle(source).toSeq
 
 }
