@@ -9,8 +9,10 @@ import fr.renoux.nightbirds.rules.state.Legal
 import fr.renoux.nightbirds.rules.state.WithTarget
 import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.rules.state.Illegal
+import fr.renoux.nightbirds.rules.state.CardType
 
-class Whore(f: Family) extends Card(f)(Illegal) with WithTarget {
+object WhoreType extends CardType(Illegal)
+class Whore(f: Family) extends Card(f)(WhoreType) with WithTarget {
 
   override def activate(target: Card) = {
     _revealed = true

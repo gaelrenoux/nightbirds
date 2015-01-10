@@ -5,7 +5,7 @@ import fr.renoux.nightbirds.rules.cardtypes.Color
 /**
  * A family, which is associated to a player. A family has cash, cards and stuff.
  */
-class Family(val color: Color) extends PublicFamily {
+class Family(val color: Color) {
 
   val cards = color.makeCards(this)
 
@@ -18,23 +18,30 @@ class Family(val color: Color) extends PublicFamily {
   def take(amount: Cash) = {
     val t = cash - amount
     _cash = t.remaining
+    resetPublicState()
     t
   }
 
   /** Store an amount of cash in this famHavingCashily */
-  def store(amount: Cash) = { _cash += amount }
+  def store(amount: Cash) = {
+    _cash += amount
+    resetPublicState()
+  }
+
+  def discard(card: Card) = {
+    _hand = _hand - card
+    resetPublicState()
+  }
 
   def resetHand = {
     _hand = cards
+    resetPublicState()
   }
 
-  /** Returns the family with "fog of war" : only public information */
-  def public = this.asInstanceOf[PublicFamily]
+  private var _publicState = new FamilyPublicState(color, cash, _hand.size)
+  private def resetPublicState() = { _publicState = new FamilyPublicState(color, cash, _hand.size) }
+  def public = _publicState
 }
 
 /** only public informations */
-trait PublicFamily {
-  val color: Color
-  def handSize: Int
-  def cash: Cash
-}
+class FamilyPublicState(val color: Color, val cash: Cash, val handSize: Int)

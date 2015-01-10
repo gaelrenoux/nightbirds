@@ -8,8 +8,10 @@ import fr.renoux.nightbirds.rules.state.Cash
 import fr.renoux.nightbirds.rules.Rules
 import fr.renoux.nightbirds.rules.state.Family
 import fr.renoux.nightbirds.rules.state.Transaction
+import fr.renoux.nightbirds.rules.state.CardType
 
-class Bum(f: Family) extends Card(f)(Legal) with WithoutTarget {
+object BumType extends CardType(Legal)
+class Bum(f: Family) extends Card(f)(BumType) with WithoutTarget {
 
   override def activate() = {
     _revealed = true

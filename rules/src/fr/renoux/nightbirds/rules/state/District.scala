@@ -11,7 +11,14 @@ class District(val position: Int) {
 
   /** Add a new card in a district */
   def append(c: Card) = _cards.append(c)
-  
+
   def clear() = _cards.clear()
 
+  def public = {
+    new DistrictPublicState(position, _cards.map { _.public }.toVector)
+  }
+
 }
+
+/** only public informations */
+class DistrictPublicState(val position: Int, val cards: Vector[CardPublicState])

@@ -21,6 +21,12 @@ class GameState(
    * Returns the game state with the "fog of war" : only public information is included.
    *  This includes the revealed cards and the public informations about players.
    */
-  def public = this
+  def public = {
+    new GamePublicState(families.map { _.public }, districts.map { _.public })
+  }
 
 }
+
+class GamePublicState(
+  val families: IndexedSeq[FamilyPublicState],
+  val districts: IndexedSeq[DistrictPublicState])

@@ -31,7 +31,7 @@ class Game(playersInput: Set[Player]) {
   /** Play a game, returns the score for each color from the winner to the loser */
   def play() = {
 
-    players.foreach { _.initGame(gameState, affectations) }
+    players.foreach { _.initGame(gameState.public, affectations) }
 
     for (roundNum <- 0 until playersCount) {
       /* Play the round number roundNum. Round number is zero-based*/
@@ -41,6 +41,7 @@ class Game(playersInput: Set[Player]) {
       for (turnNum <- 0 until turnCount) {
         doActivation(roundNum, turnNum)
       }
+      gameState.endRound()
     }
 
     gameState.families.map { f => f.color -> f.cash.amount }.sortBy(_._2).reverse.toMap
@@ -50,7 +51,7 @@ class Game(playersInput: Set[Player]) {
   private def doPlacement(roundNum: Int, turnNum: Int) = {
     val playerIndex = (turnNum + roundNum) % playersCount
     val player = players(playerIndex)
-    
+
     player.place(gameState.public)
   }
 
@@ -58,7 +59,7 @@ class Game(playersInput: Set[Player]) {
   private def doActivation(roundNum: Int, turnNum: Int) = {
     val playerIndex = (turnNum + roundNum) % playersCount
     val player = players(playerIndex)
-    
+
     player.activate(gameState.public)
   }
 

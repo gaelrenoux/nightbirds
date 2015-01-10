@@ -1,9 +1,9 @@
 package fr.renoux.nightbirds.rules.state
 
 /** Card in the game. */
-class Card(val family: Family)(val legality: Legality) extends PublicRevealedCard {
-  
-  val clazz = this.getClass()
+class Card(val family: Family)(val cardType: CardType) {
+
+  val legality: Legality = cardType.legality
 
   private var _cash = Cash.Zero
   def cash = _cash
@@ -30,12 +30,10 @@ class Card(val family: Family)(val legality: Legality) extends PublicRevealedCar
     _cash = Cash.Zero
     _revealed = false
   }
-  
-  def public = if (revealed) {
-    this.asInstanceOf[PublicRevealedCard]
-  } else {
-    this.asInstanceOf[PublicCard]
-  }
+
+  private var _publicState = new CardPublicState(family.public, cash, None)
+  private def resetPublicState() = { _publicState = new CardPublicState(family.public, cash, if (revealed) Some(cardType) else None) }
+  def public = _publicState
 
 }
 
@@ -48,13 +46,4 @@ trait WithoutTarget extends Card {
 }
 
 /** only public informations */
-trait PublicCard {
-  val family: PublicFamily
-  def cash: Cash
-  def revealed : Boolean
-}
-
-/** only public informations for a card that is visible by everyone */
-trait PublicRevealedCard extends PublicCard {
-  val clazz: Class[_ <: Card]
-}
+class CardPublicState(val family: FamilyPublicState, val cash: Cash, val cardType: Option[CardType])
