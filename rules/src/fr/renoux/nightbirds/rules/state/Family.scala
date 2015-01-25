@@ -9,11 +9,12 @@ class Family(val color: Color) {
 
   val cards = color.makeCards(this)
 
-  private var _cash: Cash = Cash(0)
+  private var _cash: Cash = Cash(10)
   def cash = _cash
 
   private var _hand: Set[Card] = cards
   def handSize = _hand.size
+  def hand = _hand
 
   def take(amount: Cash) = {
     val t = cash - amount
@@ -29,7 +30,7 @@ class Family(val color: Color) {
   }
 
   /** Returns true if the card was able to be discarded */
-  def discard(card: Card) : Boolean = {
+  def discard(card: Card): Boolean = {
     if (_hand.contains(card)) {
       _hand = _hand - card
       resetPublicState()
@@ -37,7 +38,18 @@ class Family(val color: Color) {
     } else false
   }
 
-  def resetHand = {
+  /** Returns an option with the discarded card if it was there, None if it wasn't */
+  def discard(cardType: CardType): Option[Card] = {
+    val card = _hand.filter(_.cardType == cardType).headOption
+    if (card.isDefined) {
+      _hand = _hand - card.get
+      resetPublicState()
+      true
+    }
+    card
+  }
+
+  def resetHand() = {
     _hand = cards
     resetPublicState()
   }
@@ -45,6 +57,12 @@ class Family(val color: Color) {
   private var _publicState = new FamilyPublicState(color, cash, _hand.size)
   private def resetPublicState() = { _publicState = new FamilyPublicState(color, cash, _hand.size) }
   def public = _publicState
+
+  override def toString = {
+    val builder = new StringBuilder(color.toString)
+    builder.append("(").append(_cash).append(")").append("(")
+    _hand map { _.cardType } mkString (builder.toString(), ",", ")")
+  }
 }
 
 /** only public informations */

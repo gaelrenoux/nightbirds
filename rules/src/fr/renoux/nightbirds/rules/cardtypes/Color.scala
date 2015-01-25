@@ -5,11 +5,12 @@ import fr.renoux.nightbirds.rules.state.Family
 
 sealed abstract class Color(val cardMakers: (Family => Card)*) {
   def makeCards(f: Family): Set[Card] = cardMakers.map { _.apply(f) }.toSet
+  override def toString = this.getClass().getSimpleName().dropRight(1)
 }
 
-object Pink extends Color(new Bum(_), new Whore(_))
-object Kaki extends Color(new Bum(_), new Bum(_))
-object Taupe extends Color(new Whore(_), new Whore(_))
+object Pink extends Color(new Bum(_), new Whore(_), new Bum(_), new Whore(_))
+object Kaki extends Color(new Bum(_), new Bum(_), new Bum(_), new Bum(_))
+object Taupe extends Color(new Whore(_), new Whore(_), new Whore(_), new Whore(_))
 /* object Black extends Color(Whore, PrivateEye, Thug, Bum)
 object Blue extends Color(Photograph, Cop, Skinhead, Bum)
 object Green extends Color(Taxi, Dealer, PrivateEye, Burglar)

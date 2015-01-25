@@ -23,6 +23,8 @@ case class Cash(val amount: Int) extends Ordered[Cash] {
 
   def isZero = (amount == 0)
 
+  override def toString = amount + "$"
+
 }
 
 object Cash {

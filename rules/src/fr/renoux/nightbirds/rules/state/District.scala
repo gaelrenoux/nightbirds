@@ -7,10 +7,10 @@ class District(val position: Int) {
 
   private var _cards = mutable.ArrayBuffer[Card]()
   /** we do not wish cards to be modified from the outside */
-  def apply(ix : Int) = _cards(ix)
+  def apply(ix: Int) = _cards(ix)
   def cards = _cards.toSeq
   def size = _cards.size
-  
+
   /** Add a new card in a district */
   def append(c: Card) = _cards.append(c)
 
@@ -20,7 +20,10 @@ class District(val position: Int) {
     new DistrictPublicState(position, _cards.map { _.public }.toVector)
   }
 
+  override def toString = _cards.mkString("#" + position + "(", ",", ")")
 }
 
 /** only public informations */
-class DistrictPublicState(val position: Int, val cards: Vector[CardPublicState])
+class DistrictPublicState(val position: Int, val cards: Vector[CardPublicState]) {
+  def size = cards.size
+}

@@ -8,8 +8,10 @@ import scala.annotation.tailrec
 import fr.renoux.nightbirds.rules.state.District
 import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.rules.state.WithTarget
+import fr.renoux.nightbirds.rules.state.RightNeighbour
+import fr.renoux.nightbirds.rules.state.LeftNeighbour
 
-class Game(playersInput: Set[Player]) {
+class Game(playersInput: Player*) {
 
   val random = new Random
 
@@ -22,6 +24,10 @@ class Game(playersInput: Set[Player]) {
   /** Colors, in the same order as players */
   val colors = random.pick(Color.all.toSeq, playersCount)
 
+  if (colors.size < playersCount) {
+    throw new IllegalArgumentException("Too many players !")
+  }
+
   /** Number of turns per step of a round (two steps per round : placement and activation) */
   val turnCount = playersCount * Rules.CardsCountPerPlayer
 
@@ -31,10 +37,18 @@ class Game(playersInput: Set[Player]) {
 
   val gameState = new GameState(families)
 
+  println(gameState)
+  println(players)
+  println(affectations)
+
   /** Play a game, returns the score for each color from the winner to the loser */
   def play() = {
 
-    players.foreach { _.initGame(gameState.public, affectations) }
+    players.foreach { p =>
+      val hisAffectation = affectations.filter(_._2 == p)
+      val hisColor = hisAffectation.head._1
+      p.initGame(gameState.public, hisColor)
+    }
 
     for (roundNum <- 0 until playersCount) {
       /* Play the round number roundNum. Round number is zero-based*/
@@ -63,12 +77,13 @@ class Game(playersInput: Set[Player]) {
     val player = players(playerIndex)
     val family = families(playerIndex)
 
-    val (card, district) = player.place(gameState.public)
+    val (cardType, districtPublicState) = player.place(gameState.public, family.hand map { _.cardType })
 
-    if (!family.discard(card)) {
-      throw new CheaterException("Player " + player + " : card " + card + " is not available")
+    val cardOption = family.discard(cardType)
+    cardOption match {
+      case None => throw new CheaterException("Player " + player + " : card " + cardType + " is not available")
+      case Some(card) => gameState.districts(districtPublicState.position).append(card)
     }
-    district.append(card)
   }
 
   /** Second stage of the round : activating cards */
@@ -77,15 +92,15 @@ class Game(playersInput: Set[Player]) {
     val player = affectations(card.family.color)
 
     card.reveal()
-    val (activation, neighbour) = player.activate(gameState.public, district, column)
-    
+    val (activation, neighbour) = player.activate(gameState.public, district.public, column)
+
     if (activation) {
       val target = neighbour.map {
         _ match {
-          case Left if column == 0 => throw new CheaterException("Player " + player + " : card " + card + " has no left neighbour")
-          case Left => district(column - 1)
-          case Right if column >= district.size => throw new CheaterException("Player " + player + " : card " + card + " has no right neighbour")
-          case Right => district(column + 1)
+          case LeftNeighbour if column == 0 => throw new CheaterException("Player " + player + " : card " + card + " has no left neighbour")
+          case LeftNeighbour => district(column - 1)
+          case RightNeighbour if column >= district.size => throw new CheaterException("Player " + player + " : card " + card + " has no right neighbour")
+          case RightNeighbour => district(column + 1)
         }
       }
 
@@ -94,7 +109,7 @@ class Game(playersInput: Set[Player]) {
         case wt: WithTarget if target.isEmpty => throw new CheaterException("Player " + player + " : card " + card + " needed a target")
         case wt: WithTarget => wt.activate(target.get)
       }
-    }//end if activation
+    } //end if activation
   }
 
 }

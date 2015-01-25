@@ -39,6 +39,12 @@ class Card(val family: Family)(val cardType: CardType) {
   private var _publicState = new CardPublicState(family.public, cash, None)
   private def resetPublicState() = { _publicState = new CardPublicState(family.public, cash, if (revealed) Some(cardType) else None) }
   def public = _publicState
+  
+  override def toString = {
+    val builder = new StringBuilder(this.getClass().getSimpleName())
+    builder.append("(").append(_cash).append(", ").append(family.color).append(")")
+    builder.toString()
+  }
 
 }
 
