@@ -10,7 +10,7 @@ import fr.renoux.nightbirds.rules.state.CardPublicState
 import fr.renoux.nightbirds.rules.state.Neighbour
 
 /** Not trusted. He returns stuff but can't modify the GameState */
-abstract class Player {
+trait Player {
   def initGame(gs: GamePublicState, attributions: Map[Color, Player])
 
   /** Returns a card and a district to put it in */
