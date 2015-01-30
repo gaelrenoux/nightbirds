@@ -82,7 +82,7 @@ class Game(playersInput: Player*) {
     val cardOption = family.discard(cardType)
     cardOption match {
       case None => throw new CheaterException("Player " + player + " : card " + cardType + " is not available")
-      case Some(card) => gameState.districts(districtPublicState.position).append(card)
+      case Some(card) => card.place(gameState.districts(districtPublicState.position))
     }
   }
 
@@ -92,24 +92,26 @@ class Game(playersInput: Player*) {
     val player = affectations(card.family.color)
 
     card.reveal()
-    val (activation, neighbour) = player.activate(gameState.public, district.public, column)
+    if (card.canAct) {
+      val (activation, neighbour) = player.activate(gameState.public, district.public, column)
 
-    if (activation) {
-      val target = neighbour.map {
-        _ match {
-          case LeftNeighbour if column == 0 => throw new CheaterException("Player " + player + " : card " + card + " has no left neighbour")
-          case LeftNeighbour => district(column - 1)
-          case RightNeighbour if column >= district.size => throw new CheaterException("Player " + player + " : card " + card + " has no right neighbour")
-          case RightNeighbour => district(column + 1)
+      if (activation) {
+        val target = neighbour.map {
+          _ match {
+            case LeftNeighbour if column == 0 => throw new CheaterException("Player " + player + " : card " + card + " has no left neighbour")
+            case LeftNeighbour => district(column - 1)
+            case RightNeighbour if column >= district.size => throw new CheaterException("Player " + player + " : card " + card + " has no right neighbour")
+            case RightNeighbour => district(column + 1)
+          }
         }
-      }
 
-      card match {
-        case wot: WithoutTarget => wot.activate()
-        case wt: WithTarget if target.isEmpty => throw new CheaterException("Player " + player + " : card " + card + " needed a target")
-        case wt: WithTarget => wt.activate(target.get)
-      }
-    } //end if activation
+        card match {
+          case wot: WithoutTarget => wot.activate(gameState)
+          case wt: WithTarget if target.isEmpty => throw new CheaterException("Player " + player + " : card " + card + " needed a target")
+          case wt: WithTarget => wt.activate(target.get, gameState)
+        }
+      } //end if activation
+    }
   }
 
 }

@@ -11,8 +11,8 @@ class District(val position: Int) {
   def cards = _cards.toSeq
   def size = _cards.size
 
-  /** Add a new card in a district */
-  def append(c: Card) = _cards.append(c)
+  /** Add a new card in a district. Restricted to this package, the engine should use the Card#place() method. */
+  private[state] def append(c: Card) = _cards.append(c)
 
   def clear() = _cards.clear()
 

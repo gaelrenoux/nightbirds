@@ -11,12 +11,11 @@ import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.rules.state.Illegal
 import fr.renoux.nightbirds.rules.state.CardType
 
-object WhoreType extends CardType(Illegal)
-class Whore(f: Family) extends Card(f)(WhoreType) with WithTarget {
+object SkinheadType extends CardType(Illegal)
+class Skinhead(f: Family) extends Card(f)(SkinheadType) with WithTarget {
 
   override def activate(target: Card) = {
-    val transaction = target.take(Cash(Rules.WhoreEarnings))
-    store(transaction.subtracted)
+    target.hit()
   }
 
 }

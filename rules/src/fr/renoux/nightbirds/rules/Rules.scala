@@ -3,6 +3,14 @@ package fr.renoux.nightbirds.rules
 object Rules {
   val CardsCountPerPlayer = 4
 
-  val WhoreEarnings = 3
   val BumEarnings = 1
+  val CookEarnings = 3
+  val DealerLegalEarnings = 1
+  val DealerIllegalEarnings = 3
+  val DjEarnings = 2
+  val WhoreEarnings = 2
+  val ThugLegalEarnings = 3
+  val ThugIllegalEarnings = 1
+  
+  val DjPrice = 2
 }

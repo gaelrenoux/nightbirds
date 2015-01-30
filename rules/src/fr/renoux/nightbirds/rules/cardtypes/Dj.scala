@@ -10,13 +10,14 @@ import fr.renoux.nightbirds.rules.state.Family
 import fr.renoux.nightbirds.rules.state.Transaction
 import fr.renoux.nightbirds.rules.state.CardType
 
-object BumType extends CardType(Legal)
-class Bum(f: Family) extends Card(f)(BumType) with WithoutTarget {
+object DjType extends CardType(Legal)
+class Dj(f: Family) extends Card(f)(DjType) with WithoutTarget {
 
   override def activate() = {
-    store(Cash(Rules.BumEarnings))
+    store(Cash(Rules.DjEarnings))
+    for (c <- this.position.get._1.cards) {
+      c.take(Cash(Rules.DjPrice))
+    }
   }
-
-  override def take(amount: Cash) = Transaction(cash, Cash.Zero, amount, false)
 
 }

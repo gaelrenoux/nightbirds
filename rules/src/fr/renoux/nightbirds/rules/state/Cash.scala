@@ -1,7 +1,7 @@
 package fr.renoux.nightbirds.rules.state
 
-/** An amount of cash. Immutable. */
-case class Cash(val amount: Int) extends Ordered[Cash] {
+/** An amount of cash. Immutable. The amount can't be negative. */
+sealed case class Cash(val amount: Int) extends Ordered[Cash] {
   if (amount < 0) {
     throw new IllegalArgumentException
   }
@@ -29,4 +29,5 @@ case class Cash(val amount: Int) extends Ordered[Cash] {
 
 object Cash {
   val Zero = Cash(0)
+  val One = Cash(1)
 }
