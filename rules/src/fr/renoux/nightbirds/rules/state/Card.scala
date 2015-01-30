@@ -11,7 +11,7 @@ class Card(val family: Family)(val cardType: CardType) {
   private var _revealed = false
   def revealed = _revealed
 
-  private var _position: Option[(District, Int)] = None
+  private var _position: Option[Position] = None
   def position = _position
 
   private var _canAct = true
@@ -20,12 +20,13 @@ class Card(val family: Family)(val cardType: CardType) {
   /** true when a card has been activated */
   private var _tapped = false
   def tapped = _tapped
-  def tap() = { _tapped = true }
+  def tap() = { _tapped = true; resetPublicState() }
 
   /** Place this card at the end of a district */
   def place(district: District) = {
-    _position = Some(district, district.size)
+    _position = Some(Position(district, district.size))
     district.append(this)
+    resetPublicState()
   }
 
   /** This card is shown to everybody */
@@ -39,9 +40,11 @@ class Card(val family: Family)(val cardType: CardType) {
     val t = _cash - amount
     _cash = t.remaining
     if (t.fullySuccessful) {
+      resetPublicState()
       t
     } else {
       val t2 = family.take(t.notSubtracted)
+      resetPublicState()
       t.backedBy(t2)
     }
   }
@@ -50,18 +53,23 @@ class Card(val family: Family)(val cardType: CardType) {
   def takeIfAvailable(amount: Cash) = {
     val t = _cash - amount
     _cash = t.remaining
+    resetPublicState()
   }
 
   /** Store an amount of cash in this card */
-  def store(amount: Cash) = { _cash += amount }
+  def store(amount: Cash) = {
+    _cash += amount
+    resetPublicState()
+  }
 
   /** Hit this card ans send it to the hospital */
   def hit() = {
     _cash = Cash.Zero
     family.take(Cash.One)
     _canAct = false
+    resetPublicState()
   }
-  
+
   /** Is targeted and stuff may happens. Player can't refuse to. */
   def isTargeted(origin: Card) = {}
 
@@ -73,7 +81,7 @@ class Card(val family: Family)(val cardType: CardType) {
 
   /** Does this card do something when witness ? */
   val hasWitnessEffect = false
-  
+
   def witness(origin: Card) = {}
 
   /** At the end of the night */

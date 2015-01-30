@@ -15,14 +15,13 @@ object PhotographType extends CardType(Legal)
 class Photograph(f: Family) extends Card(f)(PhotographType) with WithoutTarget {
 
   override def activate(gs : GameState) = {
-    val position = gs.find(this).get
     
-    val leftGuyTapped = position.left.map(_.get).map(_.tapped).getOrElse(false)
+    val leftGuyTapped = position.get.left.map(_.get).map(_.tapped).getOrElse(false)
     if (leftGuyTapped) {
       store(Cash(Rules.PhotographEarnings))
     }
     
-    val rightGuyTapped = position.right.map(_.get).map(_.tapped).getOrElse(false)
+    val rightGuyTapped = position.get.right.map(_.get).map(_.tapped).getOrElse(false)
     if (rightGuyTapped) {
       store(Cash(Rules.PhotographEarnings))
     }
