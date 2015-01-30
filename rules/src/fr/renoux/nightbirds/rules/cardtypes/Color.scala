@@ -8,9 +8,9 @@ sealed abstract class Color(val cardMakers: (Family => Card)*) {
   override def toString = this.getClass().getSimpleName().dropRight(1)
 }
 
-object Pink extends Color(new Bum(_), new Whore(_), new Bum(_), new Whore(_))
+object Pink extends Color(new Bum(_), new Whore(_), new Cook(_), new Dealer(_))
 object Kaki extends Color(new Bum(_), new Bum(_), new Bum(_), new Bum(_))
-object Taupe extends Color(new Whore(_), new Whore(_), new Whore(_), new Whore(_))
+object Taupe extends Color(new Dj(_), new Skinhead(_), new Thug(_), new Whore(_))
 /* object Black extends Color(Whore, PrivateEye, Thug, Bum)
 object Blue extends Color(Photograph, Cop, Skinhead, Bum)
 object Green extends Color(Taxi, Dealer, PrivateEye, Burglar)

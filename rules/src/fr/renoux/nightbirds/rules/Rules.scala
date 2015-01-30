@@ -4,6 +4,7 @@ object Rules {
   val CardsCountPerPlayer = 4
 
   val BumEarnings = 1
+  val BurglarEarnings = 3
   val CookEarnings = 3
   val DealerLegalEarnings = 1
   val DealerIllegalEarnings = 3
@@ -12,5 +13,6 @@ object Rules {
   val ThugLegalEarnings = 3
   val ThugIllegalEarnings = 1
   
+  val BurglarLossOnDisturbance = 2
   val DjPrice = 2
 }

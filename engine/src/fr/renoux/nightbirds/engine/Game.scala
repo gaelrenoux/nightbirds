@@ -10,6 +10,8 @@ import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.rules.state.WithTarget
 import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.state.LeftNeighbour
+import fr.renoux.nightbirds.rules.state.Card
+import fr.renoux.nightbirds.rules.state.Position
 
 class Game(playersInput: Player*) {
 
@@ -87,30 +89,47 @@ class Game(playersInput: Player*) {
   }
 
   /** Second stage of the round : activating cards */
-  private def doActivation(roundNum: Int, district: District, column: Int) = {
+  private def doActivation(roundNum: Int, district: District, column: Int): Unit = {
+    val position = Position(district.public, column)
     val card = district(column)
     val player = affectations(card.family.color)
 
     card.reveal()
+    if (!card.canAct) return
+
+    val (activation, neighbour) = player.activate(gameState.public, position)
+    if (!activation) return
+
+    val targetPosition = neighbour.map {
+      _ match {
+        case LeftNeighbour if column == 0 => throw new CheaterException("Player " + player + " : card " + card + " has no left neighbour")
+        case LeftNeighbour => Position(district.public, column - 1)
+        case RightNeighbour if column >= district.size => throw new CheaterException("Player " + player + " : card " + card + " has no right neighbour")
+        case RightNeighbour => Position(district.public, column + 1)
+      }
+    }
+
+    val target = targetPosition map { p => district(p.column) }
+
+    card match {
+      case wot: WithoutTarget => activateWithoutTarget(wot, position)
+      case wt: WithTarget if target.isEmpty => throw new CheaterException("Player " + player + " : card " + card + " needed a target")
+      case wt: WithTarget => activateOnTarget(wt, position, target.get, targetPosition.get)
+    }
+  }
+
+  private def activateWithoutTarget(card: WithoutTarget, cardPosition: Position) = {
+    card.activate(gameState)
+  }
+
+  private def activateOnTarget(card: WithTarget, cardPosition: Position, target: Card, targetPosition: Position) = {
+    val targetedPlayer = affectations(target.family.color)
+    if (target.hasTargetedEffect && targetedPlayer.react(gameState.public, targetPosition, cardPosition)) {
+      target.react(card)
+    }
+    /* check if the card can still act */
     if (card.canAct) {
-      val (activation, neighbour) = player.activate(gameState.public, district.public, column)
-
-      if (activation) {
-        val target = neighbour.map {
-          _ match {
-            case LeftNeighbour if column == 0 => throw new CheaterException("Player " + player + " : card " + card + " has no left neighbour")
-            case LeftNeighbour => district(column - 1)
-            case RightNeighbour if column >= district.size => throw new CheaterException("Player " + player + " : card " + card + " has no right neighbour")
-            case RightNeighbour => district(column + 1)
-          }
-        }
-
-        card match {
-          case wot: WithoutTarget => wot.activate(gameState)
-          case wt: WithTarget if target.isEmpty => throw new CheaterException("Player " + player + " : card " + card + " needed a target")
-          case wt: WithTarget => wt.activate(target.get, gameState)
-        }
-      } //end if activation
+        card.activate(target, gameState)
     }
   }
 

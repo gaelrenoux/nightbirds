@@ -27,3 +27,6 @@ class District(val position: Int) {
 class DistrictPublicState(val position: Int, val cards: Vector[CardPublicState]) {
   def size = cards.size
 }
+
+/** Utility class to specify a card in a public district */
+case class Position(val district : DistrictPublicState, val column : Int)

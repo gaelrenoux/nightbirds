@@ -10,26 +10,29 @@ class Card(val family: Family)(val cardType: CardType) {
 
   private var _revealed = false
   def revealed = _revealed
-  
-  private var _position : Option[(District, Int)] = None
+
+  private var _position: Option[(District, Int)] = None
   def position = _position
-  
+
   private var _canAct = true
   def canAct = _canAct
-  
+
   /** Place this card at the end of a district */
-  def place(district : District) = {
+  def place(district: District) = {
     _position = Some(district, district.size)
     district.append(this)
   }
-  
+
+  /** This card is shown to everybody */
   def reveal() = {
     _revealed = true
     resetPublicState()
   }
 
+  /** Take money from this card. If not enough, take from the family. */
   def take(amount: Cash) = {
     val t = _cash - amount
+    _cash = t.remaining
     if (t.fullySuccessful) {
       t
     } else {
@@ -38,14 +41,30 @@ class Card(val family: Family)(val cardType: CardType) {
     }
   }
 
-  /** Store an amount of cash in this family */
-  def store(amount: Cash) = { _cash += amount }
+  /** Take money from this card. Do not take from the family if there isn't enough. */
+  def takeIfAvailable(amount: Cash) = {
+    val t = _cash - amount
+    _cash = t.remaining
+  }
   
+  /** Store an amount of cash in this card */
+  def store(amount: Cash) = { _cash += amount }
+
+  /** Hit this card ans send it to the hospital */
   def hit() = {
     _cash = Cash.Zero
     family.take(Cash.One)
     _canAct = false
   }
+
+  /** Does this card do something when targeted ? */
+  val hasTargetedEffect = false
+
+  /** Is targeted and does something (the player chose to) */
+  def react(origin: Card) = {}
+
+  /** Does this card do something when witness ? */
+  val hasWitnessEffect = false
 
   /** At the end of the night */
   def sleep() = {
@@ -60,7 +79,7 @@ class Card(val family: Family)(val cardType: CardType) {
   private var _publicState = new CardPublicState(None, family.public, Cash.Zero, true)
   private def resetPublicState() = { _publicState = new CardPublicState(if (revealed) Some(cardType) else None, family.public, cash, _canAct) }
   def public = _publicState
-  
+
   override def toString = {
     val builder = new StringBuilder(this.getClass().getSimpleName())
     builder.append("(").append(_cash).append(", ").append(family.color).append(")")
@@ -70,14 +89,14 @@ class Card(val family: Family)(val cardType: CardType) {
 }
 
 trait WithTarget extends Card {
-  def activate(target: Card, gs: GameState) : Unit = activate(target)
-  def activate(target : Card) : Unit = Unit
+  def activate(target: Card, gs: GameState): Unit = activate(target)
+  def activate(target: Card): Unit = Unit
 }
 
 trait WithoutTarget extends Card {
-  def activate(gs : GameState): Unit = activate()
-  def activate() : Unit = Unit
+  def activate(gs: GameState): Unit = activate()
+  def activate(): Unit = Unit
 }
 
 /** only public informations */
-class CardPublicState(val cardType: Option[CardType], val family: FamilyPublicState, val cash: Cash, val canAct : Boolean)
+class CardPublicState(val cardType: Option[CardType], val family: FamilyPublicState, val cash: Cash, val canAct: Boolean)

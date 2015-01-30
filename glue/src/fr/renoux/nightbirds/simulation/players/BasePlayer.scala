@@ -11,6 +11,7 @@ import fr.renoux.nightbirds.rules.state.Neighbour
 import fr.renoux.nightbirds.rules.state.LeftNeighbour
 import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.state.CardType
+import fr.renoux.nightbirds.rules.state.Position
 
 class BasePlayer extends Player {
 
@@ -32,7 +33,10 @@ class BasePlayer extends Player {
   }
 
   /** Returns a choice to activate a card, and optionally a target to go wih it */
-  override def activate(gs: GamePublicState, district: DistrictPublicState, column: Int): (Boolean, Option[Neighbour]) = {
+  override def activate(gs: GamePublicState, position : Position): (Boolean, Option[Neighbour]) = {
+    val district = position.district
+    val column = position.column
+    
     val districtSize = district.size
     if (districtSize == 1) (false, None)
     else if (column == 0) (true, Some(RightNeighbour))
