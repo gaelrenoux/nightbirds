@@ -2,6 +2,7 @@ package fr.renoux.nightbirds.rules.state
 
 import fr.renoux.nightbirds.rules.cardtypes.Color
 import scala.util.Properties
+import fr.renoux.nightbirds.rules.state.Position
 
 class GameState(
   val families: IndexedSeq[Family],
@@ -21,6 +22,15 @@ class GameState(
       d.clear()
     }
     families.foreach { _.resetHand() }
+  }
+
+  def find(c: Card) = {
+    var index = -1
+    val district = districts find { d =>
+      index = d.indexOf(c)
+      index > -1
+    }
+    district.map(Position(_, index))
   }
 
   /**

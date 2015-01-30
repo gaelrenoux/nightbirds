@@ -15,6 +15,8 @@ class District(val position: Int) {
   private[state] def append(c: Card) = _cards.append(c)
 
   def clear() = _cards.clear()
+  
+  def indexOf(card : Card) = _cards.indexOf(card)
 
   def public = {
     new DistrictPublicState(position, _cards.map { _.public }.toVector)
@@ -27,6 +29,3 @@ class District(val position: Int) {
 class DistrictPublicState(val position: Int, val cards: Vector[CardPublicState]) {
   def size = cards.size
 }
-
-/** Utility class to specify a card in a public district */
-case class Position(val district : DistrictPublicState, val column : Int)

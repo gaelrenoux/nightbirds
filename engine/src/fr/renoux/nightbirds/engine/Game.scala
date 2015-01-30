@@ -90,23 +90,21 @@ class Game(playersInput: Player*) {
 
   /** Second stage of the round : activating cards */
   private def doActivation(roundNum: Int, district: District, column: Int): Unit = {
-    val position = Position(district.public, column)
-    val card = district(column)
+    val position = Position(district, column)
+    val card = position.get
     val player = affectations(card.family.color)
 
     card.reveal()
     if (!card.canAct) return
 
-    val (activation, neighbour) = player.activate(gameState.public, position)
+    val (activation, neighbour) = player.activate(gameState.public, position.public)
     if (!activation) return
 
-    val targetPosition = neighbour.map {
-      _ match {
-        case LeftNeighbour if column == 0 => throw new CheaterException("Player " + player + " : card " + card + " has no left neighbour")
-        case LeftNeighbour => Position(district.public, column - 1)
-        case RightNeighbour if column >= district.size => throw new CheaterException("Player " + player + " : card " + card + " has no right neighbour")
-        case RightNeighbour => Position(district.public, column + 1)
-      }
+    val targetPosition = neighbour match {
+      case None => None
+      case Some(LeftNeighbour) => position.left
+      case Some(RightNeighbour) => position.right
+      case _ => throw new CheaterException(neighbour.toString)
     }
 
     val target = targetPosition map { p => district(p.column) }
@@ -119,17 +117,37 @@ class Game(playersInput: Player*) {
   }
 
   private def activateWithoutTarget(card: WithoutTarget, cardPosition: Position) = {
-    card.activate(gameState)
+    if (card.canAct) {
+      card.activate(gameState)
+      card.tap()
+
+      cardPosition.left foreach { p => witness(p.get, p, card, cardPosition) }
+      cardPosition.right foreach { p => witness(p.get, p, card, cardPosition) }
+    }
   }
 
   private def activateOnTarget(card: WithTarget, cardPosition: Position, target: Card, targetPosition: Position) = {
     val targetedPlayer = affectations(target.family.color)
-    if (target.hasTargetedEffect && targetedPlayer.react(gameState.public, targetPosition, cardPosition)) {
+    target.isTargeted(card)
+    
+    if (target.hasTargetedReaction && targetedPlayer.react(gameState.public, targetPosition.public, cardPosition.public)) {
       target.react(card)
     }
+    
     /* check if the card can still act */
     if (card.canAct) {
-        card.activate(target, gameState)
+      card.activate(target, gameState)
+      card.tap()
+
+      cardPosition.left foreach { p => witness(p.get, p, card, cardPosition) }
+      cardPosition.right foreach { p => witness(p.get, p, card, cardPosition) }
+    }
+  }
+
+  private def witness(witness: Card, witnessPosition: Position, origin: Card, originPosition: Position) = {
+    val witnessPlayer = affectations(witness.family.color)
+    if (witness.hasWitnessEffect && witnessPlayer.witness(gameState.public, witnessPosition.public, originPosition.public)) {
+      witness.witness(origin)
     }
   }
 

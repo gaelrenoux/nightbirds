@@ -18,7 +18,7 @@ class Skinhead(f: Family) extends Card(f)(SkinheadType) with WithTarget {
     target.hit()
   }
   
-  override val hasTargetedEffect = true
+  override val hasTargetedReaction = true
   
   override def react(origin : Card) = {
     this.reveal()
