@@ -3,25 +3,36 @@ package fr.renoux.nightbirds.rules.state;
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-
 import fr.renoux.nightbirds.rules.cardtypes.Pink
+import fr.renoux.nightbirds.rules.cardtypes.Kaki
 
-class CardTest {
+/** Weird, but specifying card as an argument with default value null works, however defining it as an attribute with initial value null doesn't compile */
+abstract class AbstractCardTest[C <: Card](
+  var card: C = null,
+  var otherCard: BlankCard = null,
+  var otherLegalCard: LegalBlankCard = null,
+  var otherIllegalCard: IllegalBlankCard = null) {
 
   var family: Family = null
-  var card: Card = null
+  var otherFamily: Family = null
 
   @Before
-  def prepare = {
+  final def genericPrepare() = {
     family = new Family(Pink)
-    card = new BlankCard(family)
+    otherFamily = new Family(Kaki)
+    otherCard = new LegalBlankCard(otherFamily)
+    otherLegalCard = new LegalBlankCard(otherFamily)
+    otherIllegalCard = new IllegalBlankCard(otherFamily)
+    prepare()
 
     Assert.assertEquals(Cash(10), family.cash)
     Assert.assertEquals(Cash.Zero, card.cash)
   }
 
+  def prepare()
+
   @Test
-  def testStore = {
+  def testStore() = {
     card.store(Cash(3))
     Assert.assertEquals(Cash(3), card.cash)
     card.store(Cash(2))
@@ -31,7 +42,7 @@ class CardTest {
   }
 
   @Test
-  def testTake = {
+  def testTake() = {
     card.store(Cash(5))
     card.take(Cash(2))
     Assert.assertEquals(Cash(3), card.cash)
@@ -43,7 +54,7 @@ class CardTest {
   }
 
   @Test
-  def testHit = {
+  def testHit() = {
     card.store(Cash(5))
     card.hit()
     Assert.assertEquals(Cash(0), card.cash)
@@ -51,7 +62,8 @@ class CardTest {
     Assert.assertEquals(false, card.canAct)
   }
 
-  def testSleep = {
+  @Test
+  def testSleep() = {
     card.hit()
     card.tap()
     card.reveal()
@@ -67,7 +79,7 @@ class CardTest {
   }
 
   @Test
-  def testPublic = {
+  def testPublic() = {
     card.store(Cash(5))
     assertPublic(card)
     card.take(Cash(2))
@@ -78,22 +90,18 @@ class CardTest {
     assertPublic(card)
     card.tap()
     assertPublic(card)
-    card.asInstanceOf[WithoutTarget].activate()
+    card match {
+      case wot: WithoutTarget => wot.activate()
+      case wt: WithTarget => wt.activate(otherCard)
+    }
     assertPublic(card)
   }
 
-  private def assertPublic(card: Card) = {
+  protected def assertPublic(card: Card) = {
     Assert.assertEquals(card.cash, card.public.cash)
     Assert.assertEquals(card.family.cash, card.public.family.cash)
     Assert.assertEquals(card.canAct, card.public.canAct)
     Assert.assertEquals(card.tapped, card.public.tapped)
   }
 
-}
-
-object BlankCardType extends CardType(Legal)
-class BlankCard(f: Family) extends Card(f)(BlankCardType) with WithoutTarget {
-  override def activate() = {
-    store(Cash(2))
-  }
 }

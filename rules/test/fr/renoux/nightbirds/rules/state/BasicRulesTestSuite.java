@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ CardTest.class })
+@SuiteClasses({ LegalBlankCardTest.class, IllegalBlankCardTest.class })
 public class BasicRulesTestSuite {
 
 }
