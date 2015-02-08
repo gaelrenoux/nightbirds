@@ -26,7 +26,11 @@ abstract class AbstractCardTest[C <: Card](
     prepare()
 
     Assert.assertEquals(Cash(10), family.cash)
+    Assert.assertEquals(Cash(10), otherFamily.cash)
     Assert.assertEquals(Cash.Zero, card.cash)
+    Assert.assertEquals(Cash.Zero, otherCard.cash)
+    Assert.assertEquals(Cash.Zero, otherLegalCard.cash)
+    Assert.assertEquals(Cash.Zero, otherIllegalCard.cash)
   }
 
   def prepare()
