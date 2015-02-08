@@ -129,18 +129,19 @@ class Game(playersInput: Player*) {
   private def activateOnTarget(card: WithTarget, cardPosition: Position, target: Card, targetPosition: Position) = {
     val targetedPlayer = affectations(target.family.color)
     target.isTargeted(card)
-    
+
     if (target.hasTargetedReaction && targetedPlayer.react(gameState.public, targetPosition.public, cardPosition.public)) {
       target.react(card)
     }
-    
+
     /* check if the card can still act */
     if (card.canAct) {
       card.activate(target, gameState)
       card.tap()
 
-      cardPosition.left foreach { p => witness(p.get, p, card, cardPosition) }
-      cardPosition.right foreach { p => witness(p.get, p, card, cardPosition) }
+      /* the target is not a witness */
+      cardPosition.left foreach { p => if (p != targetPosition) witness(p.get, p, card, cardPosition) }
+      cardPosition.right foreach { p => if (p != targetPosition) witness(p.get, p, card, cardPosition) }
     }
   }
 
