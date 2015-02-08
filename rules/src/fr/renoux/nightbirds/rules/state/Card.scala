@@ -54,6 +54,7 @@ class Card(val family: Family)(val cardType: CardType) {
     val t = _cash - amount
     _cash = t.remaining
     resetPublicState()
+    t
   }
 
   /** Store an amount of cash in this card */

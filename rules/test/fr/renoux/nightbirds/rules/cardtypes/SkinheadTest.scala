@@ -21,7 +21,7 @@ class SkinheadTest extends AbstractCardTest[Skinhead] {
     otherCard.store(Cash(5))
     card.activate(otherCard)
     card.tap()
-    Assert.assertEquals(Cash(3), card.cash)
+    Assert.assertEquals(Cash(3+5), card.cash)
     Assert.assertEquals(Cash.Zero, otherCard.cash)
     Assert.assertEquals(Cash(10), family.cash)
     Assert.assertEquals(Cash(9), otherFamily.cash)
@@ -31,9 +31,9 @@ class SkinheadTest extends AbstractCardTest[Skinhead] {
   @Test
   def testReaction = {
     card.store(Cash(3))
-    otherCard.store(Cash(5))
+    otherCard.store(Cash(2))
     card.react(otherCard)
-    Assert.assertEquals(Cash(3), card.cash)
+    Assert.assertEquals(Cash(3+2), card.cash)
     Assert.assertEquals(Cash.Zero, otherCard.cash)
     Assert.assertEquals(Cash(10), family.cash)
     Assert.assertEquals(Cash(9), otherFamily.cash)

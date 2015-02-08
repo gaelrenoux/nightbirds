@@ -15,6 +15,7 @@ object SkinheadType extends CardType(Illegal)
 class Skinhead(f: Family) extends Card(f)(SkinheadType) with WithTarget {
 
   override def activate(target: Card) = {
+    store(target.takeIfAvailable(Cash.Infinity).subtracted)
     target.hit()
   }
   
@@ -22,6 +23,7 @@ class Skinhead(f: Family) extends Card(f)(SkinheadType) with WithTarget {
   
   override def react(origin : Card) = {
     this.reveal()
+    store(origin.takeIfAvailable(Cash.Infinity).subtracted)
     origin.hit()
   }
 }

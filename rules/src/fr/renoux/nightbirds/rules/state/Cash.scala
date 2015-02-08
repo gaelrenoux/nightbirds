@@ -11,23 +11,39 @@ sealed case class Cash(val amount: Int) extends Ordered[Cash] {
   def +(that: Cash) = {
     if (that.isZero) this
     else if (this.isZero) that
+    else if (that.isInfinite) Cash.Infinity
+    else if (this.isInfinite) Cash.Infinity
     else Cash(this.amount + that.amount)
   }
 
   /** Returns a couple : what's left (almost like a real substraction), and what you got when substracting */
   def -(that: Cash) = {
-    val difference = this.amount - that.amount
-    if (difference < 0) Transaction(Cash(0), this, Cash(-difference), false)
-    else Transaction(Cash(difference), that, Cash(0), true)
+    if (this == Cash.Infinity && that == Cash.Infinity) {
+      Transaction(Cash.Zero, Cash.Infinity, Cash(0), true)
+    } else if (this == Cash.Infinity) {
+      Transaction(Cash.Infinity, that, Cash(0), true)
+    } else if (that == Cash.Infinity) {
+      Transaction(Cash.Zero, this, Cash.Infinity, false)
+    } else {
+      val difference = this.amount - that.amount
+      if (difference < 0) Transaction(Cash(0), this, Cash(-difference), false)
+      else Transaction(Cash(difference), that, Cash(0), true)
+    }
   }
 
   def isZero = (amount == 0)
 
-  override def toString = amount + "$"
+  def isInfinite = (amount == Integer.MAX_VALUE)
+
+  override def toString = this match {
+    case Cash.Infinity => "Infinity$"
+    case _ => amount + "$"
+  }
 
 }
 
 object Cash {
   val Zero = Cash(0)
   val One = Cash(1)
+  val Infinity = Cash(Integer.MAX_VALUE)
 }
