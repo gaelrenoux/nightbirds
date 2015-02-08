@@ -2,10 +2,9 @@ package fr.renoux.nightbirds.rules.state
 
 /** Result of taking cash from cash. Returns what is remaining (as a normal subtraction), what was really taken, and what could not be taken. Immutable */
 case class Transaction(val remaining: Cash, val subtracted: Cash, val notSubtracted: Cash, val fullySuccessful: Boolean) {
-  if (!fullySuccessful) {
-    /* there may be money remaining if the transaction was unsuccessful for another reason - see the bum */
-    assert(notSubtracted != Cash.Zero)
-  } else {
+  /* there may be money remaining if the transaction was unsuccessful for another reason - see the bum */
+  /* Zero can be "not subtracted" on an unsuccessful transaction if zero was the amount we attempted to subtract in the first place from a bum */
+  if (fullySuccessful) {
     assert(notSubtracted == Cash.Zero)
   }
 
