@@ -14,14 +14,14 @@ import fr.renoux.nightbirds.rules.state.CardType
 object SkinheadType extends CardType(Illegal)
 class Skinhead(f: Family) extends Card(f)(SkinheadType) with WithTarget {
 
-  override def activate(target: Card) = {
+  override def specificActivate(target: Card) = {
     store(target.takeIfAvailable(Cash.Infinity).subtracted)
     target.hit()
   }
   
   override val hasTargetedReaction = true
   
-  override def react(origin : Card) = {
+  override def specificReactToTargeted(origin : Card) = {
     this.reveal()
     store(origin.takeIfAvailable(Cash.Infinity).subtracted)
     origin.hit()

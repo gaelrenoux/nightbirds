@@ -17,15 +17,14 @@ class PhotographTest extends AbstractCardTest[Photograph] {
   @Test
   def testActivate = {
     card.store(Cash(3))
-    card.activate()
+    card.activate(gs)
     Assert.assertEquals(Cash(3), card.cash)
   }
 
   @Test
   def testWitnessWhileActive = {
     card.store(Cash(3))
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3), card.cash)
     card.witness(otherCard)
     Assert.assertEquals(Cash(3 + Rules.PhotographEarnings), card.cash)
@@ -36,8 +35,7 @@ class PhotographTest extends AbstractCardTest[Photograph] {
     card.store(Cash(3))
     card.witness(otherCard)
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.PhotographEarnings), card.cash)
   }
 
@@ -46,8 +44,7 @@ class PhotographTest extends AbstractCardTest[Photograph] {
     card.store(Cash(3))
     card.witness(otherCard)
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.PhotographEarnings), card.cash)
     card.witness(otherCard)
     Assert.assertEquals(Cash(3 + 2*Rules.PhotographEarnings), card.cash)
@@ -58,8 +55,7 @@ class PhotographTest extends AbstractCardTest[Photograph] {
     card.store(Cash(3))
     card.isTargeted(otherCard)
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3), card.cash)
     card.isTargeted(otherCard)
     Assert.assertEquals(Cash(3), card.cash)

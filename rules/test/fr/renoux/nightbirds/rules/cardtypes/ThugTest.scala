@@ -19,7 +19,7 @@ class ThugTest extends AbstractCardTest[Thug] {
   def testActivateOnLegalEnough = {
     card.store(Cash(3))
     otherLegalCard.store(Cash(5))
-    card.activate(otherLegalCard)
+    card.activate(otherLegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.ThugLegalEarnings), card.cash)
     Assert.assertEquals(Cash(5 - Rules.ThugLegalEarnings), otherLegalCard.cash)
   }
@@ -28,7 +28,7 @@ class ThugTest extends AbstractCardTest[Thug] {
   def testActivateOnLegalEnoughWithFamily = {
     card.store(Cash(3))
     otherLegalCard.store(Cash.Zero)
-    card.activate(otherLegalCard)
+    card.activate(otherLegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.ThugLegalEarnings), card.cash)
     Assert.assertEquals(Cash.Zero, otherLegalCard.cash)
     Assert.assertEquals(Cash(10 - Rules.ThugLegalEarnings), otherFamily.cash)
@@ -39,7 +39,7 @@ class ThugTest extends AbstractCardTest[Thug] {
     card.store(Cash(3))
     otherLegalCard.store(Cash.Zero)
     otherFamily.take(Cash(100))
-    card.activate(otherLegalCard)
+    card.activate(otherLegalCard, gs)
     Assert.assertEquals(Cash(3), card.cash)
     Assert.assertEquals(Cash.Zero, otherLegalCard.cash)
   }
@@ -48,7 +48,7 @@ class ThugTest extends AbstractCardTest[Thug] {
   def testActivateOnIllegalEnough = {
     card.store(Cash(3))
     otherIllegalCard.store(Cash(5))
-    card.activate(otherIllegalCard)
+    card.activate(otherIllegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.ThugIllegalEarnings), card.cash)
     Assert.assertEquals(Cash(5 - Rules.ThugIllegalEarnings), otherIllegalCard.cash)
   }
@@ -57,7 +57,7 @@ class ThugTest extends AbstractCardTest[Thug] {
   def testActivateOnIllegalEnoughWithFamily = {
     card.store(Cash(3))
     otherIllegalCard.store(Cash.Zero)
-    card.activate(otherIllegalCard)
+    card.activate(otherIllegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.ThugIllegalEarnings), card.cash)
     Assert.assertEquals(Cash.Zero, otherIllegalCard.cash)
     Assert.assertEquals(Cash(10 - Rules.ThugIllegalEarnings), otherFamily.cash)
@@ -68,7 +68,7 @@ class ThugTest extends AbstractCardTest[Thug] {
     card.store(Cash(3))
     otherIllegalCard.store(Cash.Zero)
     otherFamily.take(Cash(100))
-    card.activate(otherIllegalCard)
+    card.activate(otherIllegalCard, gs)
     Assert.assertEquals(Cash(3), card.cash)
     Assert.assertEquals(Cash.Zero, otherIllegalCard.cash)
   }

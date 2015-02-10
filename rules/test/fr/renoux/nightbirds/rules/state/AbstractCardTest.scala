@@ -7,14 +7,16 @@ import fr.renoux.nightbirds.rules.cardtypes.Pink
 import fr.renoux.nightbirds.rules.cardtypes.Kaki
 
 /** Weird, but specifying card as an argument with default value null works, however defining it as an attribute with initial value null doesn't compile */
-abstract class AbstractCardTest[C <: Card](
-  var card: C = null,
-  var otherCard: BlankCard = null,
-  var otherLegalCard: LegalBlankCard = null,
-  var otherIllegalCard: IllegalBlankCard = null) {
+abstract class AbstractCardTest[C <: Card](var card: C = null) {
+  
+  var otherCard: BlankCard = null
+  var otherLegalCard: LegalBlankCard = null
+  var otherIllegalCard: IllegalBlankCard = null
 
   var family: Family = null
   var otherFamily: Family = null
+
+  var gs: GameState = new GameState(null, null)
 
   @Before
   final def genericPrepare() = {
@@ -69,7 +71,6 @@ abstract class AbstractCardTest[C <: Card](
   @Test
   def testSleep() = {
     card.hit()
-    card.tap()
     card.reveal()
     card.store(Cash(5))
     Assert.assertEquals(Cash(5), card.cash)
@@ -92,11 +93,9 @@ abstract class AbstractCardTest[C <: Card](
     assertPublic(card)
     card.hit()
     assertPublic(card)
-    card.tap()
-    assertPublic(card)
     card match {
-      case wot: WithoutTarget => wot.activate()
-      case wt: WithTarget => wt.activate(otherCard)
+      case wot: WithoutTarget => wot.activate(gs)
+      case wt: WithTarget => wt.activate(otherCard, gs)
     }
     assertPublic(card)
   }

@@ -14,7 +14,7 @@ import fr.renoux.nightbirds.rules.state.CardType
 object DealerType extends CardType(Illegal)
 class Dealer(f: Family) extends Card(f)(DealerType) with WithTarget {
 
-  override def activate(target: Card) = {
+  override def specificActivate(target: Card) = {
     val taking = if (target.legality.legal) Rules.DealerLegalEarnings else Rules.DealerIllegalEarnings
     val transaction = target.take(Cash(taking))
     store(transaction.subtracted)

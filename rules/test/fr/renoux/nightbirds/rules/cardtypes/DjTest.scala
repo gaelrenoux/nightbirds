@@ -39,7 +39,7 @@ class DjTest extends AbstractCardTest[Dj] {
   def testActivateGainsMoney = {
     card.store(Cash(3))
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.DjEarnings), card.cash)
   }
 
@@ -47,7 +47,7 @@ class DjTest extends AbstractCardTest[Dj] {
   def testActivateMakesThemPay = {
     card.store(Cash(3))
     otherCard.store(Cash(3))
-    card.activate()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 - Rules.DjPrice), otherCard.cash)
     Assert.assertEquals(Cash(10 - 2 * Rules.DjPrice), otherFamily.cash)
     Assert.assertEquals(Cash(10 - Rules.DjPrice), againAnotherFamily.cash)
@@ -59,7 +59,7 @@ class DjTest extends AbstractCardTest[Dj] {
     Assert.assertEquals(Cash.Zero, myOtherCard.cash)
     Assert.assertEquals(Cash(3), myAnotherCard.cash)
     Assert.assertEquals(Cash(10), family.cash)
-    card.activate()
+    card.activate(gs)
     Assert.assertEquals(Cash.Zero, myOtherCard.cash)
     Assert.assertEquals(Cash(3), myAnotherCard.cash)
     Assert.assertEquals(Cash(10), family.cash)

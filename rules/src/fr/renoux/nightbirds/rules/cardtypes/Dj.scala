@@ -13,7 +13,7 @@ import fr.renoux.nightbirds.rules.state.CardType
 object DjType extends CardType(Legal)
 class Dj(f: Family) extends Card(f)(DjType) with WithoutTarget {
 
-  override def activate() = {
+  override def specificActivate() = {
     store(Cash(Rules.DjEarnings))
     for (c <- this.position.get.district.cards) {
       if (c.family != family) c.take(Cash(Rules.DjPrice))

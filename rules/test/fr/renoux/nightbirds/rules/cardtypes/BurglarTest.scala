@@ -18,8 +18,7 @@ class BurglarTest extends AbstractCardTest[Burglar] {
   def testActivateUndisturbed = {
     card.store(Cash(3))
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.BurglarEarnings), card.cash)
   }
 
@@ -29,8 +28,7 @@ class BurglarTest extends AbstractCardTest[Burglar] {
     Assert.assertEquals(Cash(3), card.cash)
     card.isTargeted(otherCard)
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.BurglarEarnings - Rules.BurglarLossOnDisturbance), card.cash)
   }
 
@@ -38,8 +36,7 @@ class BurglarTest extends AbstractCardTest[Burglar] {
   def testActivateDisturbedAfter = {
     card.store(Cash(3))
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.BurglarEarnings), card.cash)
     card.isTargeted(otherCard)
     Assert.assertEquals(Cash(3 + Rules.BurglarEarnings - Rules.BurglarLossOnDisturbance), card.cash)
@@ -51,8 +48,7 @@ class BurglarTest extends AbstractCardTest[Burglar] {
     Assert.assertEquals(Cash(3), card.cash)
     card.isTargeted(otherCard)
     Assert.assertEquals(Cash(3), card.cash)
-    card.activate()
-    card.tap()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.BurglarEarnings - Rules.BurglarLossOnDisturbance), card.cash)
     card.isTargeted(otherCard)
     val left = math.max(0, Rules.BurglarEarnings - 2 * Rules.BurglarLossOnDisturbance)

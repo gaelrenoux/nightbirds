@@ -29,7 +29,7 @@ class BumTest extends AbstractCardTest[Bum] {
   @Test
   def testActivate = {
     card.store(Cash(3))
-    card.activate()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.BumEarnings), card.cash)
   }
 

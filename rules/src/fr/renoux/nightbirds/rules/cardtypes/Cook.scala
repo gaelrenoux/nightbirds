@@ -13,7 +13,7 @@ import fr.renoux.nightbirds.rules.state.CardType
 object CookType extends CardType(Legal)
 class Cook(f: Family) extends Card(f)(CookType) with WithoutTarget {
 
-  override def activate() = {
+  override def specificActivate() = {
     store(Cash(Rules.CookEarnings))
   }
 

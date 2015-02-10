@@ -17,7 +17,7 @@ class DealerTest extends AbstractCardTest[Dealer] {
   def testActivateOnLegalEnough = {
     card.store(Cash(3))
     otherLegalCard.store(Cash(5))
-    card.activate(otherLegalCard)
+    card.activate(otherLegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.DealerLegalEarnings), card.cash)
     Assert.assertEquals(Cash(5 - Rules.DealerLegalEarnings), otherLegalCard.cash)
   }
@@ -26,7 +26,7 @@ class DealerTest extends AbstractCardTest[Dealer] {
   def testActivateOnLegalEnoughWithFamily = {
     card.store(Cash(3))
     otherLegalCard.store(Cash.Zero)
-    card.activate(otherLegalCard)
+    card.activate(otherLegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.DealerLegalEarnings), card.cash)
     Assert.assertEquals(Cash.Zero, otherLegalCard.cash)
     Assert.assertEquals(Cash(10 - Rules.DealerLegalEarnings), otherFamily.cash)
@@ -37,7 +37,7 @@ class DealerTest extends AbstractCardTest[Dealer] {
     card.store(Cash(3))
     otherLegalCard.store(Cash.Zero)
     otherFamily.take(Cash(100))
-    card.activate(otherLegalCard)
+    card.activate(otherLegalCard, gs)
     Assert.assertEquals(Cash(3), card.cash)
     Assert.assertEquals(Cash.Zero, otherLegalCard.cash)
   }
@@ -46,7 +46,7 @@ class DealerTest extends AbstractCardTest[Dealer] {
   def testActivateOnIllegalEnough = {
     card.store(Cash(3))
     otherIllegalCard.store(Cash(5))
-    card.activate(otherIllegalCard)
+    card.activate(otherIllegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.DealerIllegalEarnings), card.cash)
     Assert.assertEquals(Cash(5 - Rules.DealerIllegalEarnings), otherIllegalCard.cash)
   }
@@ -55,7 +55,7 @@ class DealerTest extends AbstractCardTest[Dealer] {
   def testActivateOnIllegalEnoughWithFamily = {
     card.store(Cash(3))
     otherIllegalCard.store(Cash.Zero)
-    card.activate(otherIllegalCard)
+    card.activate(otherIllegalCard, gs)
     Assert.assertEquals(Cash(3 + Rules.DealerIllegalEarnings), card.cash)
     Assert.assertEquals(Cash.Zero, otherIllegalCard.cash)
     Assert.assertEquals(Cash(10 - Rules.DealerIllegalEarnings), otherFamily.cash)
@@ -66,7 +66,7 @@ class DealerTest extends AbstractCardTest[Dealer] {
     card.store(Cash(3))
     otherIllegalCard.store(Cash.Zero)
     otherFamily.take(Cash(100))
-    card.activate(otherIllegalCard)
+    card.activate(otherIllegalCard, gs)
     Assert.assertEquals(Cash(3), card.cash)
     Assert.assertEquals(Cash.Zero, otherIllegalCard.cash)
   }

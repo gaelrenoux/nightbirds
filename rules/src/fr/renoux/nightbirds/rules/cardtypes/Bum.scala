@@ -13,7 +13,7 @@ import fr.renoux.nightbirds.rules.state.CardType
 object BumType extends CardType(Legal)
 class Bum(f: Family) extends Card(f)(BumType) with WithoutTarget {
 
-  override def activate() = {
+  override def specificActivate() = {
     store(Cash(Rules.BumEarnings))
   }
 

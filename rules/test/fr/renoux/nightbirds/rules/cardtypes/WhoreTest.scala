@@ -19,7 +19,7 @@ class WhoreTest extends AbstractCardTest[Whore] {
   def testActivateOnEnough = {
     card.store(Cash(3))
     otherCard.store(Cash(5))
-    card.activate(otherCard)
+    card.activate(otherCard, gs)
     Assert.assertEquals(Cash(3 + Rules.WhoreEarnings), card.cash)
     Assert.assertEquals(Cash(5 - Rules.WhoreEarnings), otherCard.cash)
   }
@@ -28,7 +28,7 @@ class WhoreTest extends AbstractCardTest[Whore] {
   def testActivateOnEnoughWithFamily = {
     card.store(Cash(3))
     otherCard.store(Cash.Zero)
-    card.activate(otherCard)
+    card.activate(otherCard, gs)
     Assert.assertEquals(Cash(3 + Rules.WhoreEarnings), card.cash)
     Assert.assertEquals(Cash.Zero, otherCard.cash)
     Assert.assertEquals(Cash(10 - Rules.WhoreEarnings), otherFamily.cash)
@@ -39,7 +39,7 @@ class WhoreTest extends AbstractCardTest[Whore] {
     card.store(Cash(3))
     otherCard.store(Cash.Zero)
     otherFamily.take(Cash(100))
-    card.activate(otherCard)
+    card.activate(otherCard, gs)
     Assert.assertEquals(Cash(3), card.cash)
     Assert.assertEquals(Cash.Zero, otherCard.cash)
   }

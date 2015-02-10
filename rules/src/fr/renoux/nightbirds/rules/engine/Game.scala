@@ -116,40 +116,44 @@ class Game(playersInput: Player*) {
     }
   }
 
-  private def activateWithoutTarget(card: WithoutTarget, cardPosition: Position) = {
-    if (card.canAct) {
-      card.activate(gameState)
-      card.tap()
+  /** Activation of a card at a certain position. No target. */
+  private def activateWithoutTarget(card: WithoutTarget, cardPosition: Position) = if (card.canAct) {
 
-      cardPosition.left foreach { p => witness(p.get, p, card, cardPosition) }
-      cardPosition.right foreach { p => witness(p.get, p, card, cardPosition) }
-    }
+    card.activate(gameState)
+
+    doWitnesses(card, cardPosition)
   }
 
-  private def activateOnTarget(card: WithTarget, cardPosition: Position, target: Card, targetPosition: Position) = {
+  private def activateOnTarget(card: WithTarget, cardPosition: Position, target: Card, targetPosition: Position) = if (card.canAct) {
+
     val targetedPlayer = affectations(target.family.color)
     target.isTargeted(card)
 
-    if (target.hasTargetedReaction && targetedPlayer.react(gameState.public, targetPosition.public, cardPosition.public)) {
-      target.react(card)
+    if (target.hasTargetedReaction && targetedPlayer.reactToTargeted(gameState.public, targetPosition.public, cardPosition.public)) {
+      target.reactToTargeted(card)
     }
 
     /* check if the card can still act */
     if (card.canAct) {
       card.activate(target, gameState)
-      card.tap()
 
-      /* the target is not a witness */
-      cardPosition.left foreach { p => if (p != targetPosition) witness(p.get, p, card, cardPosition) }
-      cardPosition.right foreach { p => if (p != targetPosition) witness(p.get, p, card, cardPosition) }
+      doWitnesses(card, cardPosition)
     }
   }
 
-  private def witness(witness: Card, witnessPosition: Position, origin: Card, originPosition: Position) = {
-    val witnessPlayer = affectations(witness.family.color)
-    if (witness.hasWitnessEffect && witnessPlayer.witness(gameState.public, witnessPosition.public, originPosition.public)) {
-      witness.witness(origin)
+  private def doWitnesses(card: Card, cardPosition: Position) = {
+
+    cardPosition.neighbours foreach { p => p.get.witness(card) }
+
+    cardPosition.neighbours foreach { neighbourPosition =>
+      /* TODO can two witness reacts ? What if the first one outs the actor ?  */
+      val neighbour = neighbourPosition.get
+      val neighbourPlayer = affectations(neighbour.family.color)
+      if (neighbour.hasWitnessReaction && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
+        neighbour.reactToWitness(card)
+      }
     }
+
   }
 
 }

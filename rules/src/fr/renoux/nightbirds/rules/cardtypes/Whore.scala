@@ -14,7 +14,7 @@ import fr.renoux.nightbirds.rules.state.CardType
 object WhoreType extends CardType(Illegal)
 class Whore(f: Family) extends Card(f)(WhoreType) with WithTarget {
 
-  override def activate(target: Card) = {
+  override def specificActivate(target: Card) = {
     val transaction = target.take(Cash(Rules.WhoreEarnings))
     store(transaction.subtracted)
   }

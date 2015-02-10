@@ -20,7 +20,7 @@ class Card(val family: Family)(val cardType: CardType) {
   /** true when a card has been activated */
   private var _tapped = false
   def tapped = _tapped
-  def tap() = { _tapped = true; resetPublicState() }
+  protected def tap() = { _tapped = true; resetPublicState() }
 
   /** Place this card at the end of a district */
   def place(district: District) = {
@@ -72,18 +72,34 @@ class Card(val family: Family)(val cardType: CardType) {
   }
 
   /** Is targeted and stuff may happens. Player can't refuse to. */
-  def isTargeted(origin: Card) = {}
+  final def isTargeted(origin: Card) = specificIsTargeted(origin)
+  def specificIsTargeted(origin: Card) = {}
 
   /** Does this card do something when targeted ? */
   val hasTargetedReaction = false
 
-  /** Is targeted and does something (the player chose to) */
-  def react(origin: Card) = {}
+  /** The player chose to react to being targeted */
+  final def reactToTargeted(origin: Card) = {
+    reveal()
+    specificReactToTargeted(origin)
+    tap()
+  }
+  def specificReactToTargeted(origin: Card) = {}
+
+  /** Is witness and stuff may happens. Player can't refuse to. */
+  final def witness(origin: Card) = specificWitness(origin)
+  def specificWitness(origin: Card) = {}
 
   /** Does this card do something when witness ? */
-  val hasWitnessEffect = false
+  val hasWitnessReaction = false
 
-  def witness(origin: Card) = {}
+  /** The player chose to react to being a witness. */
+  final def reactToWitness(origin: Card) = {
+    reveal()
+    specificReactToWitness(origin)
+    tap()
+  }
+  def specificReactToWitness(origin: Card) = {}
 
   /** At the end of the night */
   def sleep() = {
@@ -109,13 +125,23 @@ class Card(val family: Family)(val cardType: CardType) {
 }
 
 trait WithTarget extends Card {
-  def activate(target: Card, gs: GameState): Unit = activate(target)
-  def activate(target: Card): Unit = Unit
+  def activate(target: Card, gs: GameState): Unit = {
+    reveal()
+    specificActivate(target, gs)
+    tap()
+  }
+  def specificActivate(target: Card, gs: GameState): Unit = specificActivate(target)
+  def specificActivate(target: Card): Unit = Unit
 }
 
 trait WithoutTarget extends Card {
-  def activate(gs: GameState): Unit = activate()
-  def activate(): Unit = Unit
+  def activate(gs: GameState): Unit = {
+    reveal()
+    specificActivate(gs)
+    tap()
+  }
+  def specificActivate(gs: GameState): Unit = specificActivate()
+  def specificActivate(): Unit = Unit
 }
 
 /** only public informations */

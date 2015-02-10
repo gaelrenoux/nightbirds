@@ -17,7 +17,7 @@ class CookTest extends AbstractCardTest[Cook] {
   @Test
   def testActivate = {
     card.store(Cash(3))
-    card.activate()
+    card.activate(gs)
     Assert.assertEquals(Cash(3 + Rules.CookEarnings), card.cash)
   }
 
