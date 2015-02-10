@@ -1,4 +1,4 @@
-package fr.renoux.nightbirds.engine
+package fr.renoux.nightbirds.rules.engine
 
 class Random {
   private val wrapped = new scala.util.Random

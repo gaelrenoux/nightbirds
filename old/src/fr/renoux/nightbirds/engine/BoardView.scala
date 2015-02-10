@@ -1,4 +1,4 @@
-package fr.renoux.nightbirds.engine
+package fr.renoux.nightbirds.rules.engine
 
 class BoardView {
 

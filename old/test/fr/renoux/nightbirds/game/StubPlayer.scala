@@ -6,7 +6,7 @@ import fr.renoux.nightbirds.rules.generics.WithoutTarget
 import fr.renoux.nightbirds.rules.generics.WithoutTargetWithInfo
 import fr.renoux.nightbirds.rules.generics.WithTarget
 import fr.renoux.nightbirds.rules.generics.WithTargetWithInfo
-import fr.renoux.nightbirds.engine.Player
+import fr.renoux.nightbirds.rules.engine.Player
 import fr.renoux.nightbirds.rules.cards.PrivateEye
 import fr.renoux.nightbirds.rules.generics.District
 import fr.renoux.nightbirds.rules.generics.Board

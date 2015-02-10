@@ -1,7 +1,7 @@
 package fr.renoux.nightbirds.simulation.players
 
-import fr.renoux.nightbirds.engine.Player
-import fr.renoux.nightbirds.engine.Random
+import fr.renoux.nightbirds.rules.engine.Player
+import fr.renoux.nightbirds.rules.engine.Random
 import fr.renoux.nightbirds.rules.cardtypes.Color
 import fr.renoux.nightbirds.rules.state.Card
 import fr.renoux.nightbirds.rules.state.District

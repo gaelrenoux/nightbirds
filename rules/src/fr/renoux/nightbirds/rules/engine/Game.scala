@@ -1,4 +1,4 @@
-package fr.renoux.nightbirds.engine
+package fr.renoux.nightbirds.rules.engine
 
 import fr.renoux.nightbirds.rules.Rules
 import fr.renoux.nightbirds.rules.cardtypes.Color

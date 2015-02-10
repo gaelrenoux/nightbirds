@@ -1,6 +1,6 @@
 package fr.renoux.nightbirds.simulation
 
-import fr.renoux.nightbirds.engine.Game
+import fr.renoux.nightbirds.rules.engine.Game
 import fr.renoux.nightbirds.simulation.players.BasePlayer
 import fr.renoux.nightbirds.rules.cardtypes.Color
 
