@@ -1,5 +1,7 @@
 package fr.renoux.nightbirds.rules.state
 
+import fr.renoux.nightbirds.rules.Rules
+
 /** Card in the game. */
 class Card(val family: Family)(val cardType: CardType) {
 
@@ -65,11 +67,8 @@ class Card(val family: Family)(val cardType: CardType) {
     _cash += amount
     resetPublicState()
   }
-
-  /** Hit this card ans send it to the hospital */
-  def hit() = {
-    _cash = Cash.Zero
-    family.take(Cash.One)
+  
+  def takeOut() = {
     _out = true
     resetPublicState()
   }

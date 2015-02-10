@@ -3,11 +3,8 @@ package fr.renoux.nightbirds.rules.cardtypes;
 import org.junit.Assert
 import org.junit.Test
 
-import fr.renoux.nightbirds.rules.Rules
 import fr.renoux.nightbirds.rules.state.AbstractCardTest
-import fr.renoux.nightbirds.rules.state.BlankCard
 import fr.renoux.nightbirds.rules.state.Cash
-import fr.renoux.nightbirds.rules.state.Family
 
 class SkinheadTest extends AbstractCardTest[Skinhead] {
 

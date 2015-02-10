@@ -124,12 +124,13 @@ class Game(playersInput: Player*) {
     doWitnesses(card, cardPosition)
   }
 
+  /** Activation of a card at a certain position, on a target at a certain position. */
   private def activateOnTarget(card: WithTarget, cardPosition: Position, target: Card, targetPosition: Position) = if (card.canAct) {
 
     val targetedPlayer = affectations(target.family.color)
     target.isTargeted(card)
 
-    if (target.hasTargetedReaction && targetedPlayer.reactToTargeted(gameState.public, targetPosition.public, cardPosition.public)) {
+    if (target.hasTargetedReaction && target.canAct && targetedPlayer.reactToTargeted(gameState.public, targetPosition.public, cardPosition.public)) {
       target.reactToTargeted(card)
     }
 
@@ -141,16 +142,19 @@ class Game(playersInput: Player*) {
     }
   }
 
-  private def doWitnesses(card: Card, cardPosition: Position) = {
+  /** Work out the witness stuff */
+  private def doWitnesses(card: Card, cardPosition: Position) = if (!card.out) {
 
     cardPosition.neighbours foreach { p => p.get.witness(card) }
 
     cardPosition.neighbours foreach { neighbourPosition =>
-      /* TODO can two witness reacts ? What if the first one outs the actor ?  */
-      val neighbour = neighbourPosition.get
-      val neighbourPlayer = affectations(neighbour.family.color)
-      if (neighbour.hasWitnessReaction && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
-        neighbour.reactToWitness(card)
+      /* the first neighbour can out this card */
+      if (!card.out) {
+        val neighbour = neighbourPosition.get
+        val neighbourPlayer = affectations(neighbour.family.color)
+        if (neighbour.hasWitnessReaction && neighbour.canAct && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
+          neighbour.reactToWitness(card)
+        }
       }
     }
 

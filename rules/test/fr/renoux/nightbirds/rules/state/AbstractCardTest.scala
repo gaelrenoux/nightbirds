@@ -26,6 +26,7 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     otherLegalCard = new LegalBlankCard(otherFamily)
     otherIllegalCard = new IllegalBlankCard(otherFamily)
     prepare()
+    card.reveal()
 
     Assert.assertEquals(Cash(10), family.cash)
     Assert.assertEquals(Cash(10), otherFamily.cash)
@@ -60,24 +61,32 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
   }
 
   @Test
-  def testHit() = {
+  def testTakeOut() = {
     card.store(Cash(5))
-    card.hit()
-    Assert.assertEquals(Cash(0), card.cash)
-    Assert.assertEquals(Cash(9), family.cash)
+    card.takeOut()
+    Assert.assertEquals(Cash(5), card.cash)
+    Assert.assertEquals(Cash(10), family.cash)
+    Assert.assertEquals(true, card.out)
     Assert.assertEquals(false, card.canAct)
   }
 
   @Test
   def testSleep() = {
-    card.hit()
-    card.reveal()
+    activate(card)
+    card.takeOut()
+    card.takeIfAvailable(Cash.Infinity)
     card.store(Cash(5))
     Assert.assertEquals(Cash(5), card.cash)
-    Assert.assertEquals(Cash(9), family.cash)
+    Assert.assertEquals(Cash(10), family.cash)
+    Assert.assertEquals(true, card.out)
+    Assert.assertEquals(true, card.tapped)
+    Assert.assertEquals(true, card.revealed)
+    Assert.assertEquals(false, card.canAct)
     card.sleep()
     Assert.assertEquals(Cash(0), card.cash)
-    Assert.assertEquals(Cash(14), family.cash)
+    Assert.assertEquals(Cash(15), family.cash)
+    Assert.assertEquals(false, card.out)
+    Assert.assertEquals(false, card.tapped)
     Assert.assertEquals(true, card.canAct)
     Assert.assertEquals(false, card.tapped)
     Assert.assertEquals(false, card.revealed)
@@ -91,13 +100,16 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     assertPublic(card)
     card.takeIfAvailable(Cash(1))
     assertPublic(card)
-    card.hit()
-    assertPublic(card)
     card match {
       case wot: WithoutTarget => wot.activate(gs)
       case wt: WithTarget => wt.activate(otherCard, gs)
     }
     assertPublic(card)
+  }
+  
+  protected def activate(card : Card) = card match {
+    case wt : WithTarget => wt.activate(otherCard, gs) 
+    case wot : WithoutTarget => wot.activate(gs) 
   }
 
   protected def assertPublic(card: Card) = {

@@ -6,6 +6,7 @@ object Rules {
   val BumEarnings = 1
   val BurglarEarnings = 3
   val CookEarnings = 3
+  val CopEarnings = 3
   val DealerLegalEarnings = 1
   val DealerIllegalEarnings = 3
   val DjEarnings = 2
@@ -15,5 +16,6 @@ object Rules {
   val WhoreEarnings = 2
   
   val BurglarLossOnDisturbance = 2
+  val CopBail = 2
   val DjPrice = 2
 }
