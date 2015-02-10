@@ -103,7 +103,7 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
   protected def assertPublic(card: Card) = {
     Assert.assertEquals(card.cash, card.public.cash)
     Assert.assertEquals(card.family.cash, card.public.family.cash)
-    Assert.assertEquals(card.canAct, card.public.canAct)
+    Assert.assertEquals(card.out, card.public.out)
     Assert.assertEquals(card.tapped, card.public.tapped)
   }
 

@@ -24,7 +24,7 @@ class Photograph(f: Family) extends Card(f)(PhotographType) with WithoutTarget {
   private var futureWitnessEffects = 0
   
   override def specificWitness(origin: Card) = {
-    if (tapped) {
+    if (revealed) {
       store(Cash(Rules.PhotographEarnings))
     } else {
       futureWitnessEffects = futureWitnessEffects + 1

@@ -14,13 +14,16 @@ class Card(val family: Family)(val cardType: CardType) {
   private var _position: Option[Position] = None
   def position = _position
 
-  private var _canAct = true
-  def canAct = _canAct
-
   /** true when a card has been activated */
   private var _tapped = false
   def tapped = _tapped
   protected def tap() = { _tapped = true; resetPublicState() }
+  
+  /** true when a card have been sent out (jail or hospital) */
+  private var _out = false
+  def out = _out
+
+  def canAct = !tapped && !out
 
   /** Place this card at the end of a district */
   def place(district: District) = {
@@ -67,7 +70,7 @@ class Card(val family: Family)(val cardType: CardType) {
   def hit() = {
     _cash = Cash.Zero
     family.take(Cash.One)
-    _canAct = false
+    _out = true
     resetPublicState()
   }
 
@@ -107,13 +110,13 @@ class Card(val family: Family)(val cardType: CardType) {
     _cash = Cash.Zero
     _revealed = false
     _position = None
-    _canAct = true
+    _out = false
     _tapped = false
     resetPublicState()
   }
 
   private var _publicState = new CardPublicState(None, family.public, Cash.Zero, true, false)
-  private def resetPublicState() = { _publicState = new CardPublicState(if (revealed) Some(cardType) else None, family.public, cash, _canAct, _tapped) }
+  private def resetPublicState() = { _publicState = new CardPublicState(if (revealed) Some(cardType) else None, family.public, cash, _out, _tapped) }
   def public = _publicState
 
   override def toString = {
@@ -145,4 +148,4 @@ trait WithoutTarget extends Card {
 }
 
 /** only public informations */
-class CardPublicState(val cardType: Option[CardType], val family: FamilyPublicState, val cash: Cash, val canAct: Boolean, val tapped: Boolean)
+class CardPublicState(val cardType: Option[CardType], val family: FamilyPublicState, val cash: Cash, val out: Boolean, val tapped: Boolean)
