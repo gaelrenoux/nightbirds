@@ -40,13 +40,13 @@ object GameLogger {
 
   /** Logs that a card has been placed, with the current state of its district */
   def placed(card: Card) =
-    Logger.debug(string(8) + card.family.color.toFixedString + " places " + card.cardType.toFixedString + " in " + card.position.get.district.toFixedString)
+    Logger.debug(string(8) + card.family.color.toFixedString + " placed " + card.cardType.toFixedString + " in " + card.position.get.district.toFixedString)
 
   /** Logs that a card has been activated on no target, with the current state of its district */
   def activated(card: Card) = {
     val builder = new StringBuilder("        ")
     builder.append(card.family.color.toFixedString).append(" ")
-    builder.append("activates       ").append(Tab)
+    builder.append("activated      ").append(Tab)
     builder.append(card.toFixedString).append(Tab)
     builder.append(string(4 + Card.FixedStringLength)).append(Tab)
     builder.append(" in ").append(card.position.get.district.toFixedString)
@@ -57,7 +57,7 @@ object GameLogger {
   def activated(card: Card, target: Card) = {
     val builder = new StringBuilder("        ")
     builder.append(card.family.color.toFixedString).append(" ")
-    builder.append("activates       ").append(Tab)
+    builder.append("activated      ").append(Tab)
     builder.append(card.toFixedString).append(Tab)
     builder.append(" on " + target.toFixedString).append(Tab)
     builder.append(" in ").append(card.position.get.district.toFixedString)
@@ -68,7 +68,7 @@ object GameLogger {
   def declinedActivation(card: Card) = {
     val builder = new StringBuilder("        ")
     builder.append(card.family.color.toFixedString).append(" ")
-    builder.append("doesn't activate").append(Tab)
+    builder.append("didn't activate").append(Tab)
     builder.append(card.toFixedString).append(Tab)
     builder.append(string(4 + Card.FixedStringLength)).append(Tab)
     builder.append(" in ").append(card.position.get.district.toFixedString)
