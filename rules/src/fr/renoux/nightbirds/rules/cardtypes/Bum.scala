@@ -19,4 +19,6 @@ class Bum(f: Family) extends Card(f)(BumType) with WithoutTarget {
 
   override def take(amount: Cash) = Transaction(cash, Cash.Zero, amount, false)
 
+  override def takeIfAvailable(amount: Cash) = Transaction(cash, Cash.Zero, amount, false)
+
 }

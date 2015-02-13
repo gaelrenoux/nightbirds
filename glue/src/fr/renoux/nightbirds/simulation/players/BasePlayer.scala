@@ -29,12 +29,15 @@ class BasePlayer extends Player {
     val card = random.pick(myHand)
     val smallestDistrictSize = gs.districts map { _.size } min
     val district = random.pick(gs.districts filter { _.size == smallestDistrictSize })
-
     (card, district)
+ 
+    (random.pick(myHand), random.pick(gs.districts))
   }
 
   /** Returns a choice to activate a card, and optionally a target to go wih it */
   override def activate(gs: GamePublicState, position : PublicPosition): (Boolean, Option[Neighbour]) = {
+    if (random.nextBoolean(0.2)) return (false, None)
+    
     val district = position.district
     val column = position.column
     

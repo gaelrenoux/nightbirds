@@ -7,6 +7,8 @@ class Random {
 
   def nextBoolean = wrapped.nextBoolean
 
+  def nextBoolean(probability: Double) = wrapped.nextDouble() <= probability
+
   def pick[T](source: Seq[T]): T = source(nextInt(source.length))
 
   def pick[T](source: Iterable[T]): T = pick(source.toSeq)

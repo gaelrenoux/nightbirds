@@ -1,6 +1,7 @@
 package fr.renoux.nightbirds.rules.state
 
 import fr.renoux.nightbirds.rules.Rules
+import fr.renoux.nightbirds.rules.cardtypes.Color
 
 /** Card in the game. */
 class Card(val family: Family)(val cardType: CardType) {
@@ -119,11 +120,27 @@ class Card(val family: Family)(val cardType: CardType) {
   def public = _publicState
 
   override def toString = {
-    val builder = new StringBuilder(this.getClass().getSimpleName())
-    builder.append("(").append(_cash).append(", ").append(family.color).append(")")
+    val builder = new StringBuilder(cardType.toString)
+    builder.append("(").append(family.color).append(", ").append(_cash).append(")")
+    builder.toString()
+  }
+  
+  /** Length is 10 +  */
+  def toFixedString = {
+    val builder = new StringBuilder(cardType.toFixedString)
+    builder.append("(").append(family.color.toFixedString)
+    builder.append(" ").append(_cash.toFixedString)
+    builder.append(" ")
+    builder.append(if (_tapped) "T" else " ")
+    builder.append(if (_out) "O" else " ")
+    builder.append(")")
     builder.toString()
   }
 
+}
+
+object Card {
+  val FixedStringLength = CardType.FixedStringLength + Color.FixedStringLength + Cash.FixedStringLength + 6
 }
 
 trait WithTarget extends Card {

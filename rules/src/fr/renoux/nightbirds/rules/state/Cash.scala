@@ -31,14 +31,16 @@ sealed case class Cash(val amount: Int) extends Ordered[Cash] {
     }
   }
 
-  def isZero = (amount == 0)
+  lazy val isZero = (amount == 0)
 
-  def isInfinite = (amount == Integer.MAX_VALUE)
+  lazy val isInfinite = (amount == Integer.MAX_VALUE)
 
-  override def toString = this match {
-    case Cash.Infinity => "Infinity$"
+  override lazy val toString = this match {
+    case Cash.Infinity => "$$$"
     case _ => amount + "$"
   }
+
+  lazy val toFixedString = toString.padTo(Cash.FixedStringLength, ' ')
 
 }
 
@@ -46,4 +48,5 @@ object Cash {
   val Zero = Cash(0)
   val One = Cash(1)
   val Infinity = Cash(Integer.MAX_VALUE)
+  val FixedStringLength = 3
 }

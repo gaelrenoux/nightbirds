@@ -61,6 +61,18 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
   }
 
   @Test
+  def testTakeIfAvailable() = {
+    card.store(Cash(5))
+    card.takeIfAvailable(Cash(2))
+    Assert.assertEquals(Cash(3), card.cash)
+    card.takeIfAvailable(Cash.Zero)
+    Assert.assertEquals(Cash(3), card.cash)
+    card.takeIfAvailable(Cash(5))
+    Assert.assertEquals(Cash(0), card.cash)
+    Assert.assertEquals(Cash(10), family.cash)
+  }
+
+  @Test
   def testTakeOut() = {
     card.store(Cash(5))
     card.takeOut()

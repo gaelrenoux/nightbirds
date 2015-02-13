@@ -23,6 +23,8 @@ class District(val position: Int) {
   }
 
   override def toString = _cards.mkString("#" + position + "(", ",", ")")
+
+  def toFixedString = _cards map {_.toFixedString} mkString("#" + position + "    ", "    ", "")
 }
 
 /** only public informations */

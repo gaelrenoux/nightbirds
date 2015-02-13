@@ -12,6 +12,7 @@ import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.state.LeftNeighbour
 import fr.renoux.nightbirds.rules.state.Card
 import fr.renoux.nightbirds.rules.state.Position
+import fr.renoux.nightbirds.utils.Logger
 
 class Game(playersInput: Player*) {
 
@@ -39,12 +40,13 @@ class Game(playersInput: Player*) {
 
   val gameState = new GameState(families)
 
-  println(gameState)
-  println(players)
-  println(affectations)
+  Logger.debug(gameState.toString)
+  Logger.debug(affectations.toString)
 
   /** Play a game, returns the score for each color from the winner to the loser */
   def play() = {
+
+    GameLogger.gameStarts(colors)
 
     players.foreach { p =>
       val hisAffectation = affectations.filter(_._2 == p)
@@ -54,9 +56,13 @@ class Game(playersInput: Player*) {
 
     for (roundNum <- 0 until playersCount) {
       /* Play the round number roundNum. Round number is zero-based*/
+      GameLogger.roundStarts(families(roundNum).color)
+
       for (turnNum <- 0 until turnCount) {
         doPlacement(roundNum, turnNum)
       }
+
+      GameLogger.roundPlacementDone(gameState)
 
       val columnMax = gameState.districts.view.map { _.size }.max
       for (column <- 0 until columnMax) {
@@ -67,10 +73,14 @@ class Game(playersInput: Player*) {
         }
       }
 
+      GameLogger.roundActivationDone(gameState)
+
       gameState.endRound()
+      GameLogger.roundEnds(gameState)
     }
 
-    gameState.families.map { f => f.color -> f.cash.amount }.sortBy(_._2).reverse.toMap
+    GameLogger.gameEnds(gameState)
+    gameState.toScore
   }
 
   /** First stage of the round : placing cards */
@@ -84,8 +94,11 @@ class Game(playersInput: Player*) {
     val cardOption = family.discard(cardType)
     cardOption match {
       case None => throw new CheaterException("Player " + player + " : card " + cardType + " is not available")
-      case Some(card) => card.place(gameState.districts(districtPublicState.position))
+      case Some(card) =>
+        card.place(gameState.districts(districtPublicState.position))
+        GameLogger.placed(card)
     }
+
   }
 
   /** Second stage of the round : activating cards */
@@ -98,7 +111,10 @@ class Game(playersInput: Player*) {
     if (!card.canAct) return
 
     val (activation, neighbour) = player.activate(gameState.public, position.public)
-    if (!activation) return
+    if (!activation) {
+      GameLogger.declinedActivation(card)
+      return
+    }
 
     val targetPosition = neighbour match {
       case None => None
@@ -122,6 +138,8 @@ class Game(playersInput: Player*) {
     card.activate(gameState)
 
     doWitnesses(card, cardPosition)
+
+    GameLogger.activated(card)
   }
 
   /** Activation of a card at a certain position, on a target at a certain position. */
@@ -140,6 +158,8 @@ class Game(playersInput: Player*) {
 
       doWitnesses(card, cardPosition)
     }
+
+    GameLogger.activated(card, target)
   }
 
   /** Work out the witness stuff */
