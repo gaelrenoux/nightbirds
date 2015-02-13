@@ -137,7 +137,7 @@ class Game(playersInput: Player*) {
 
     card.activate(gameState)
 
-    doWitnesses(card, cardPosition)
+    doWitnesses(card, cardPosition, None)
 
     GameLogger.activated(card)
   }
@@ -156,24 +156,26 @@ class Game(playersInput: Player*) {
     if (card.canAct) {
       card.activate(target, gameState)
 
-      doWitnesses(card, cardPosition)
+      doWitnesses(card, cardPosition, Some(target))
     }
 
     GameLogger.activated(card, target)
   }
 
   /** Work out the witness stuff */
-  private def doWitnesses(card: Card, cardPosition: Position) = if (!card.out) {
+  private def doWitnesses(card: Card, cardPosition: Position, target: Option[Card]) = if (!card.out) {
 
-    cardPosition.neighbours foreach { p => p.get.witness(card) }
+    cardPosition.neighbours map { _.get } filter { !target.contains(_) } foreach { _.witness(card) }
 
     cardPosition.neighbours foreach { neighbourPosition =>
-      /* the first neighbour can out this card */
+      /* the first neighbour can take out this card */
       if (!card.out) {
         val neighbour = neighbourPosition.get
-        val neighbourPlayer = affectations(neighbour.family.color)
-        if (neighbour.hasWitnessReaction && neighbour.canAct && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
-          neighbour.reactToWitness(card)
+        if (!target.contains(neighbour)) {
+          val neighbourPlayer = affectations(neighbour.family.color)
+          if (neighbour.hasWitnessReaction && neighbour.canAct && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
+            neighbour.reactToWitness(card)
+          }
         }
       }
     }
