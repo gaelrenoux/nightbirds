@@ -26,7 +26,6 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     otherLegalCard = new LegalBlankCard(otherFamily)
     otherIllegalCard = new IllegalBlankCard(otherFamily)
     prepare()
-    card.reveal()
 
     Assert.assertEquals(Cash(10), family.cash)
     Assert.assertEquals(Cash(10), otherFamily.cash)
@@ -85,6 +84,7 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
   @Test
   def testSleep() = {
     activate(card)
+    card.pass()
     card.takeOut()
     card.takeIfAvailable(Cash.Infinity)
     card.store(Cash(5))

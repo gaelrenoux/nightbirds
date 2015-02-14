@@ -39,6 +39,29 @@ class BumTest extends AbstractCardTest[Bum] {
   }
 
   @Test
+  override def testSleep() = {
+    activate(card)
+    card.pass()
+    card.takeOut()
+    card.takeIfAvailable(Cash.Infinity)
+    card.store(Cash(5))
+    Assert.assertEquals(Cash(5 + Rules.BumEarnings), card.cash)
+    Assert.assertEquals(Cash(10), family.cash)
+    Assert.assertEquals(true, card.out)
+    Assert.assertEquals(true, card.tapped)
+    Assert.assertEquals(true, card.revealed)
+    Assert.assertEquals(false, card.canAct)
+    card.sleep()
+    Assert.assertEquals(Cash(0), card.cash)
+    Assert.assertEquals(Cash(15 + Rules.BumEarnings), family.cash)
+    Assert.assertEquals(false, card.out)
+    Assert.assertEquals(false, card.tapped)
+    Assert.assertEquals(true, card.canAct)
+    Assert.assertEquals(false, card.tapped)
+    Assert.assertEquals(false, card.revealed)
+  }
+
+  @Test
   def testActivate = {
     card.store(Cash(3))
     card.activate(gs)

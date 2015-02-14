@@ -14,9 +14,19 @@ class District(val position: Int) {
   /** Add a new card in a district. Restricted to this package, the engine should use the Card#place() method. */
   private[state] def append(c: Card) = _cards.append(c)
 
+  /** Remove a card from this a district. Restricted to this package, the engine should use the Card#place() method. Error if not present. Leaves a missing card if the card removed was not at the end. */
+  private[state] def remove(c: Card) = {
+    val index = _cards.indexOf(c)
+    if (index == _cards.length - 1) {
+      _cards -= c
+    } else {
+      _cards(index) = new MissingCard(this, index)
+    }
+  }
+
   def clear() = _cards.clear()
-  
-  def indexOf(card : Card) = _cards.indexOf(card)
+
+  def indexOf(card: Card) = _cards.indexOf(card)
 
   def public = {
     new DistrictPublicState(position, _cards.map { _.public }.toVector)
@@ -24,7 +34,7 @@ class District(val position: Int) {
 
   override def toString = _cards.mkString("#" + position + "(", ",", ")")
 
-  def toFixedString = _cards map {_.toFixedString} mkString("#" + position + "    ", "    ", "")
+  def toFixedString = _cards map { _.toFixedString } mkString ("#" + position + "    ", "    ", "")
 }
 
 /** only public informations */

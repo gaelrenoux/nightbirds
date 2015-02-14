@@ -17,19 +17,29 @@ class Card(val family: Family)(val cardType: CardType) {
   private var _position: Option[Position] = None
   def position = _position
 
-  /** true when a card has been activated */
+  /** true when a card has been used (either by an activation or by a reaction)  */
   private var _tapped = false
   def tapped = _tapped
   protected def tap() = { _tapped = true; resetPublicState() }
+  
+  /** True if the card declined to activate */
+  private var _passed = false
+  def passed = _passed
+  def pass() ={ _passed = true }
   
   /** true when a card have been sent out (jail or hospital) */
   private var _out = false
   def out = _out
 
   def canAct = !tapped && !out
+  
+  def canBeActivated = canAct && !passed
 
-  /** Place this card at the end of a district */
+  /** Place this card at the end of a district. Remove it from its current position, if any, and leaves a empty space there. */
   def place(district: District) = {
+    _position foreach {p=>
+      p.district.remove(this)
+    }
     _position = Some(Position(district, district.size))
     district.append(this)
     resetPublicState()
@@ -112,6 +122,7 @@ class Card(val family: Family)(val cardType: CardType) {
     _position = None
     _out = false
     _tapped = false
+    _passed = false
     resetPublicState()
   }
 
@@ -125,13 +136,13 @@ class Card(val family: Family)(val cardType: CardType) {
     builder.toString()
   }
   
-  /** Length is 10 +  */
   def toFixedString = {
     val builder = new StringBuilder(cardType.toFixedString)
     builder.append("(").append(family.color.toFixedString)
     builder.append(" ").append(_cash.toFixedString)
     builder.append(" ")
     builder.append(if (_tapped) "T" else " ")
+    builder.append(if (_passed) "P" else " ")
     builder.append(if (_out) "O" else " ")
     builder.append(")")
     builder.toString()
@@ -140,27 +151,7 @@ class Card(val family: Family)(val cardType: CardType) {
 }
 
 object Card {
-  val FixedStringLength = CardType.FixedStringLength + Color.FixedStringLength + Cash.FixedStringLength + 6
-}
-
-trait WithTarget extends Card {
-  def activate(target: Card, gs: GameState): Unit = {
-    reveal()
-    specificActivate(target, gs)
-    tap()
-  }
-  def specificActivate(target: Card, gs: GameState): Unit = specificActivate(target)
-  def specificActivate(target: Card): Unit = Unit
-}
-
-trait WithoutTarget extends Card {
-  def activate(gs: GameState): Unit = {
-    reveal()
-    specificActivate(gs)
-    tap()
-  }
-  def specificActivate(gs: GameState): Unit = specificActivate()
-  def specificActivate(): Unit = Unit
+  val FixedStringLength = CardType.FixedStringLength + Color.FixedStringLength + Cash.FixedStringLength + 7
 }
 
 /** only public informations */

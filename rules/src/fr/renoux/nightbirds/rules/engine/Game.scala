@@ -2,16 +2,16 @@ package fr.renoux.nightbirds.rules.engine
 
 import fr.renoux.nightbirds.rules.Rules
 import fr.renoux.nightbirds.rules.cardtypes.Color
+import fr.renoux.nightbirds.rules.state.Card
+import fr.renoux.nightbirds.rules.state.District
 import fr.renoux.nightbirds.rules.state.Family
 import fr.renoux.nightbirds.rules.state.GameState
-import scala.annotation.tailrec
-import fr.renoux.nightbirds.rules.state.District
-import fr.renoux.nightbirds.rules.state.WithoutTarget
-import fr.renoux.nightbirds.rules.state.WithTarget
-import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.state.LeftNeighbour
-import fr.renoux.nightbirds.rules.state.Card
+import fr.renoux.nightbirds.rules.state.MissingCard
 import fr.renoux.nightbirds.rules.state.Position
+import fr.renoux.nightbirds.rules.state.RightNeighbour
+import fr.renoux.nightbirds.rules.state.WithTarget
+import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.utils.Logger
 
 class Game(playersInput: Player*) {
@@ -58,18 +58,25 @@ class Game(playersInput: Player*) {
       /* Play the round number roundNum. Round number is zero-based*/
       GameLogger.roundStarts(families(roundNum).color)
 
+      /* Card placement ! */
       for (turnNum <- 0 until turnCount) {
         doPlacement(roundNum, turnNum)
       }
 
       GameLogger.roundPlacementDone(gameState)
 
-      val columnMax = gameState.districts.view.map { _.size }.max
-      for (column <- 0 until columnMax) {
-        gameState.districts.foreach { d =>
-          if (column < d.size) {
-            doActivation(roundNum, d, column)
-          }
+      /* Activation ! */
+      var maxActivations = gameState.districts map { _.cards.length } sum
+
+      var next = findNextActivation()
+      while (next.isDefined) {
+        doActivation(next.get._1, next.get._2)
+        next = findNextActivation()
+
+        if (maxActivations < 0) {
+          throw new IllegalStateException
+        } else {
+          maxActivations = maxActivations - 1
         }
       }
 
@@ -101,17 +108,25 @@ class Game(playersInput: Player*) {
 
   }
 
-  /** Second stage of the round : activating cards */
-  private def doActivation(roundNum: Int, district: District, column: Int): Unit = {
+  private def findNextActivation() = {
+    val districtsAndIndex = gameState.districts.view map { d => d -> d.cards.indexWhere(_.canBeActivated) } filter { _._2 != -1 }
+    if (districtsAndIndex.size == 0) None
+    else Some(districtsAndIndex minBy { di => (di._2, di._1.position) })
+    //minBy { di => 100 * di._2 + di._1.position }
+  }
+
+  /** Second stage of the round : activating card at the given position */
+  private def doActivation(district: District, column: Int): Unit = {
     val position = Position(district, column)
     val card = position.get
     val player = affectations(card.family.color)
 
     card.reveal()
-    if (!card.canAct) return
+    if (!card.canAct) return //shouldn't happen, but who knows
 
     val (activation, neighbour) = player.activate(gameState.public, position.public)
     if (!activation) {
+      card.pass()
       GameLogger.declinedActivation(card)
       return
     }
@@ -120,10 +135,10 @@ class Game(playersInput: Player*) {
       case None => None
       case Some(LeftNeighbour) => position.left
       case Some(RightNeighbour) => position.right
-      case _ => throw new CheaterException(neighbour.toString)
+      case _ => throw new IllegalArgumentException(neighbour.toString)
     }
 
-    val target = targetPosition map { p => district(p.column) }
+    val target = targetPosition map { p => district(p.column) } filter { !_.isInstanceOf[MissingCard] }
 
     card match {
       case wot: WithoutTarget => activateWithoutTarget(wot, position)
@@ -164,18 +179,20 @@ class Game(playersInput: Player*) {
 
   /** Work out the witness stuff */
   private def doWitnesses(card: Card, cardPosition: Position, target: Option[Card]) = if (!card.out) {
+    val witnessesAndPosition = cardPosition.neighbours.view map { np => np.get -> np } filter { c =>
+      val (neighbour, neighbourPosition) = c
+      !target.contains(neighbour) && !neighbour.isInstanceOf[MissingCard]
+    } force
 
-    cardPosition.neighbours map { _.get } filter { !target.contains(_) } foreach { _.witness(card) }
+    witnessesAndPosition foreach { _._1.witness(card) }
 
-    cardPosition.neighbours foreach { neighbourPosition =>
-      /* the first neighbour can take out this card */
+    witnessesAndPosition foreach { c =>
+      val (neighbour, neighbourPosition) = c
+      /* the first neighbour can take out this card, so check each time */
       if (!card.out) {
-        val neighbour = neighbourPosition.get
-        if (!target.contains(neighbour)) {
-          val neighbourPlayer = affectations(neighbour.family.color)
-          if (neighbour.hasWitnessReaction && neighbour.canAct && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
-            neighbour.reactToWitness(card)
-          }
+        val neighbourPlayer = affectations(neighbour.family.color)
+        if (neighbour.hasWitnessReaction && neighbour.canAct && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
+          neighbour.reactToWitness(card)
         }
       }
     }
