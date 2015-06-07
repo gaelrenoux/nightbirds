@@ -15,13 +15,13 @@ class Burglar(f: Family) extends Card(f)(BurglarType) with WithoutTarget {
 
   private var _earned = Cash.Zero
 
-  override def specificActivate() = {
+  protected override def specificActivate() = {
     val loot = Cash(Rules.BurglarEarnings) - Cash(_disturbanceCount * Rules.BurglarLossOnDisturbance)
     _earned = loot.remaining
     store(_earned)
   }
 
-  override def specificIsTargeted(origin: Card) = {
+  protected override def specificIsTargeted(origin: Card) = {
     if (tapped) {
       val t = _earned - Cash(Rules.BurglarLossOnDisturbance)
       _earned = t.remaining

@@ -1,7 +1,7 @@
 package fr.renoux.nightbirds.rules.engine
 
-class Random {
-  private val wrapped = new scala.util.Random
+class Random(val seed : Long = scala.util.Random.nextInt()) {
+  private val wrapped = new scala.util.Random(seed)
 
   def nextInt(upperLimit: Int) = wrapped.nextInt(upperLimit)
 

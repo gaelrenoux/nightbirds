@@ -17,11 +17,7 @@ class District(val position: Int) {
   /** Remove a card from this a district. Restricted to this package, the engine should use the Card#place() method. Error if not present. Leaves a missing card if the card removed was not at the end. */
   private[state] def remove(c: Card) = {
     val index = _cards.indexOf(c)
-    if (index == _cards.length - 1) {
-      _cards -= c
-    } else {
-      _cards(index) = new MissingCard(this, index)
-    }
+    _cards(index) = new MissingCard(this, index)
   }
 
   def clear() = _cards.clear()
@@ -40,4 +36,5 @@ class District(val position: Int) {
 /** only public informations */
 class DistrictPublicState(val position: Int, val cards: Vector[CardPublicState]) {
   def size = cards.size
+  def apply(ix: Int) = cards(ix)
 }

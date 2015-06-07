@@ -14,7 +14,7 @@ import fr.renoux.nightbirds.rules.state.CardType
 object ThugType extends CardType(Illegal)
 class Thug(f: Family) extends Card(f)(ThugType) with WithTarget {
 
-  override def specificActivate(target: Card) = {
+  protected override def specificActivate(target: Card) = {
     val taking = if (target.legality.legal) Rules.ThugLegalEarnings else Rules.ThugIllegalEarnings
     val transaction = target.take(Cash(taking))
     store(transaction.subtracted)

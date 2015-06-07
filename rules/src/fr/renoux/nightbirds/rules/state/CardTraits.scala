@@ -6,8 +6,8 @@ trait WithoutTarget extends Card {
     specificActivate(gs)
     tap()
   }
-  def specificActivate(gs: GameState): Unit = specificActivate()
-  def specificActivate(): Unit = Unit
+  protected def specificActivate(gs: GameState): Unit = specificActivate()
+  protected def specificActivate(): Unit = Unit
 }
 
 trait WithTarget extends Card {
@@ -16,6 +16,6 @@ trait WithTarget extends Card {
     specificActivate(target, gs)
     tap()
   }
-  def specificActivate(target: Card, gs: GameState): Unit = specificActivate(target)
-  def specificActivate(target: Card): Unit = Unit
+  protected def specificActivate(target: Card, gs: GameState): Unit = specificActivate(target)
+  protected def specificActivate(target: Card): Unit = Unit
 }

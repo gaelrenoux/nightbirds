@@ -14,7 +14,7 @@ import fr.renoux.nightbirds.rules.state.LeftNeighbour
 object PhotographType extends CardType(Legal)
 class Photograph(f: Family) extends Card(f)(PhotographType) with WithoutTarget {
 
-  override def specificActivate() = {
+  protected override def specificActivate() = {
     for (i <- 0 until futureWitnessEffects) {
       store(Cash(Rules.PhotographEarnings))
     }
@@ -23,7 +23,7 @@ class Photograph(f: Family) extends Card(f)(PhotographType) with WithoutTarget {
   
   private var futureWitnessEffects = 0
   
-  override def specificWitness(origin: Card) = {
+  protected override def specificWitness(origin: Card) = {
     if (revealed) {
       store(Cash(Rules.PhotographEarnings))
     } else {

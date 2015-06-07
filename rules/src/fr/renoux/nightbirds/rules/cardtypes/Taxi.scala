@@ -14,16 +14,16 @@ import fr.renoux.nightbirds.rules.state.LeftNeighbour
 object TaxiType extends CardType(Illegal)
 class Taxi(f: Family) extends Card(f)(TaxiType) {
 
-  def activate(target: Card, district: District, targetPosition: Neighbour, gs: GameState): Unit = {
+  def activate(target: Card, district: District, targetSide: Neighbour, gs: GameState): Unit = {
     reveal()
-    specificActivate(target, district, targetPosition, gs)
+    specificActivate(target, district, targetSide, gs)
     tap()
   }
 
-  def specificActivate(target: Card, district: District, targetPosition: Neighbour, gs: GameState): Unit = specificActivate(target, district: District, targetPosition: Neighbour)
+  protected def specificActivate(target: Card, district: District, targetSide: Neighbour, gs: GameState): Unit = specificActivate(target, district, targetSide)
 
-  def specificActivate(target: Card, district: District, targetPosition: Neighbour): Unit = {
-    if (targetPosition == LeftNeighbour) {
+  protected def specificActivate(target: Card, district: District, targetSide: Neighbour): Unit = {
+    if (targetSide == LeftNeighbour) {
       target.place(district)
       this.place(district)
     } else {

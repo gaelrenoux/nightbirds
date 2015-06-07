@@ -14,7 +14,7 @@ import fr.renoux.nightbirds.rules.state.WithTarget
 object CopType extends CardType(Legal)
 class Cop(f: Family) extends Card(f)(CopType) with WithTarget {
 
-  override def specificActivate(target: Card) = {
+  protected override def specificActivate(target: Card) = {
     if (target.legality.illegal) {
       val t = target.take(Cash(Rules.CopEarnings))
       store(t.subtracted)
@@ -24,7 +24,7 @@ class Cop(f: Family) extends Card(f)(CopType) with WithTarget {
 
   override val hasTargetedReaction = true
 
-  override def specificReactToTargeted(origin: Card) = {
+  protected override def specificReactToTargeted(origin: Card) = {
     if (origin.legality.illegal) {
       hold(origin)
     }
@@ -32,7 +32,7 @@ class Cop(f: Family) extends Card(f)(CopType) with WithTarget {
 
   override val hasWitnessReaction = true
 
-  override def specificReactToWitness(origin: Card) = {
+  protected override def specificReactToWitness(origin: Card) = {
     if (origin.legality.illegal) {
       hold(origin)
     }

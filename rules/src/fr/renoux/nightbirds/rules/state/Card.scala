@@ -21,27 +21,27 @@ class Card(val family: Family)(val cardType: CardType) {
   private var _tapped = false
   def tapped = _tapped
   protected def tap() = { _tapped = true; resetPublicState() }
-  
+
   /** True if the card declined to activate */
   private var _passed = false
   def passed = _passed
-  def pass() ={ _passed = true }
-  
+  def pass() = { _passed = true }
+
   /** true when a card have been sent out (jail or hospital) */
   private var _out = false
   def out = _out
 
   def canAct = !tapped && !out
-  
+
   def canBeActivated = canAct && !passed
 
   /** Place this card at the end of a district. Remove it from its current position, if any, and leaves a empty space there. */
   def place(district: District) = {
-    _position foreach {p=>
+    _position foreach { p =>
       p.district.remove(this)
     }
-    _position = Some(Position(district, district.size))
     district.append(this)
+    _position = Some(Position(district, district.size - 1))
     resetPublicState()
   }
 
@@ -78,7 +78,7 @@ class Card(val family: Family)(val cardType: CardType) {
     _cash += amount
     resetPublicState()
   }
-  
+
   def takeOut() = {
     _out = true
     resetPublicState()
@@ -86,7 +86,7 @@ class Card(val family: Family)(val cardType: CardType) {
 
   /** Is targeted and stuff may happens. Player can't refuse to. */
   final def isTargeted(origin: Card) = specificIsTargeted(origin)
-  def specificIsTargeted(origin: Card) = {}
+  protected def specificIsTargeted(origin: Card) = {}
 
   /** Does this card do something when targeted ? */
   val hasTargetedReaction = false
@@ -97,11 +97,11 @@ class Card(val family: Family)(val cardType: CardType) {
     specificReactToTargeted(origin)
     tap()
   }
-  def specificReactToTargeted(origin: Card) = {}
+  protected def specificReactToTargeted(origin: Card) = {}
 
   /** Is witness and stuff may happens. Player can't refuse to. */
   final def witness(origin: Card) = specificWitness(origin)
-  def specificWitness(origin: Card) = {}
+  protected def specificWitness(origin: Card) = {}
 
   /** Does this card do something when witness ? */
   val hasWitnessReaction = false
@@ -112,7 +112,7 @@ class Card(val family: Family)(val cardType: CardType) {
     specificReactToWitness(origin)
     tap()
   }
-  def specificReactToWitness(origin: Card) = {}
+  protected def specificReactToWitness(origin: Card) = {}
 
   /** At the end of the night */
   def sleep() = {
@@ -135,7 +135,7 @@ class Card(val family: Family)(val cardType: CardType) {
     builder.append("(").append(family.color).append(", ").append(_cash).append(")")
     builder.toString()
   }
-  
+
   def toFixedString = {
     val builder = new StringBuilder(cardType.toFixedString)
     builder.append("(").append(family.color.toFixedString)

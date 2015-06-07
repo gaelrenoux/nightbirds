@@ -13,10 +13,10 @@ import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.state.WithTarget
 import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.utils.Logger
+import fr.renoux.nightbirds.rules.state.Neighbour
+import fr.renoux.nightbirds.rules.cardtypes.Taxi
 
-class Game(playersInput: Player*) {
-
-  val random = new Random
+class Game(playersInput: Player*)(implicit val random: Random) {
 
   /** Number of players */
   val playersCount = playersInput.size
@@ -124,41 +124,41 @@ class Game(playersInput: Player*) {
     card.reveal()
     if (!card.canAct) return //shouldn't happen, but who knows
 
-    val (activation, neighbour) = player.activate(gameState.public, position.public)
-    if (!activation) {
-      card.pass()
-      GameLogger.declinedActivation(card)
-      return
-    }
+    val activation = player.activate(gameState.public, card.public, position.public)
 
-    val targetPosition = neighbour match {
-      case None => None
-      case Some(LeftNeighbour) => position.left
-      case Some(RightNeighbour) => position.right
-      case _ => throw new IllegalArgumentException(neighbour.toString)
-    }
-
-    val target = targetPosition map { p => district(p.column) } filter { !_.isInstanceOf[MissingCard] }
-
-    card match {
-      case wot: WithoutTarget => activateWithoutTarget(wot, position)
-      case wt: WithTarget if target.isEmpty => throw new CheaterException("Player " + player + " : card " + card + " needed a target")
-      case wt: WithTarget => activateOnTarget(wt, position, target.get, targetPosition.get)
+    (card, activation) match {
+      case (_, Pass) => pass(card)
+      case (wot: WithoutTarget, ActivateWithoutTarget) => activateWithoutTarget(wot, position)
+      case (wt: WithTarget, ActivateWithTarget(neighbour)) => activateWithTarget(wt, position, neighbour)
+      case (taxi: Taxi, ActivateTaxi(neighbour, district, targetSide)) => activateTaxi(taxi, position, neighbour, gameState.districts(district.position), targetSide)
+      case _ => throw new CheaterException("Incompatible activation " + activation + " for card " + card)
     }
   }
 
+  /** Do not activate the card */
+  private def pass(card: Card) = {
+    card.pass()
+    GameLogger.declinedActivation(card)
+  }
+
   /** Activation of a card at a certain position. No target. */
-  private def activateWithoutTarget(card: WithoutTarget, cardPosition: Position) = if (card.canAct) {
-
+  private def activateWithoutTarget(card: WithoutTarget, cardPosition: Position) = {
     card.activate(gameState)
-
     doWitnesses(card, cardPosition, None)
 
     GameLogger.activated(card)
   }
 
-  /** Activation of a card at a certain position, on a target at a certain position. */
-  private def activateOnTarget(card: WithTarget, cardPosition: Position, target: Card, targetPosition: Position) = if (card.canAct) {
+  /**
+   * Activation of a card at a certain position, on a target at a certain position.
+   *  @param card The activating card
+   * @param cardPosition The activating card position on the board
+   * @param neighbour The targeted neighbour (left or right)
+   */
+  private def activateWithTarget(card: WithTarget, cardPosition: Position, neighbour: Neighbour) = {
+    val (targetPosition, target) = neighbour(cardPosition) map { p => (p, p.get) } filter { !_._2.isInstanceOf[MissingCard] } getOrElse {
+      throw new CheaterException("Target chosen is " + neighbour(cardPosition).map(_.get) + " at position " + neighbour + " by card " + card)
+    }
 
     val targetedPlayer = affectations(target.family.color)
     target.isTargeted(card)
@@ -170,11 +170,36 @@ class Game(playersInput: Player*) {
     /* check if the card can still act */
     if (card.canAct) {
       card.activate(target, gameState)
-
       doWitnesses(card, cardPosition, Some(target))
     }
 
     GameLogger.activated(card, target)
+  }
+
+  /** Activation of a card at a certain position, on a target at a certain position. */
+  private def activateTaxi(taxi: Taxi, taxiPosition: Position, neighbour: Neighbour, targetDistrict: District, targetSide: Neighbour) = {
+    if (targetDistrict.position == taxiPosition.district.position) {
+      throw new CheaterException("Taxi " + taxi + " wants to go the the same district " + targetDistrict)
+    }
+
+    val (targetPosition, target) = neighbour(taxiPosition) map { p => (p, p.get) } filter { !_._2.isInstanceOf[MissingCard] } getOrElse {
+      throw new CheaterException("No target at position " + neighbour + " for taxi " + taxi)
+    }
+
+    val targetedPlayer = affectations(target.family.color)
+    target.isTargeted(taxi)
+
+    if (target.hasTargetedReaction && target.canAct && targetedPlayer.reactToTargeted(gameState.public, targetPosition.public, taxiPosition.public)) {
+      target.reactToTargeted(taxi)
+    }
+
+    /* check if the card can still act */
+    if (taxi.canAct) {
+      taxi.activate(target, targetDistrict, targetSide, gameState)
+      doWitnesses(taxi, taxiPosition, Some(target))
+    }
+
+    GameLogger.activated(taxi, target)
   }
 
   /** Work out the witness stuff */

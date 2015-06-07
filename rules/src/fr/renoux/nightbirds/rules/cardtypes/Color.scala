@@ -10,7 +10,7 @@ sealed abstract class Color(val cardMakers: (Family => Card)*) {
 }
 
 object Pink extends Color(new Bum(_), new Whore(_), new Cook(_), new Dealer(_))
-object Kaki extends Color(new Bum(_), new Photograph(_), new Bum(_), new Bum(_))
+object Kaki extends Color(new Bum(_), new Photograph(_), new Taxi(_), new Bum(_))
 object Taupe extends Color(new Dj(_), new Skinhead(_), new Thug(_), new Whore(_))
 /* object Black extends Color(Whore, PrivateEye, Thug, Bum)
 object Blue extends Color(Photograph, Cop, Skinhead, Bum)
@@ -24,3 +24,6 @@ object Color {
   
   val FixedStringLength = 6 
 }
+
+/** For missing cards */
+object NonexistingColor extends Color
