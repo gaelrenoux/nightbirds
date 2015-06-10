@@ -6,7 +6,7 @@ class CardType(val legality: Legality) {
     this.getClass().getSimpleName().dropRight(5)
   }
 
-  lazy val toFixedString = toString.padTo(CardType.FixedStringLength, ' ')
+  lazy val toFixedString = toString.padTo(CardType.FixedStringLength, ' ').take(CardType.FixedStringLength)
 }
 
 object CardType {

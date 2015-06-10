@@ -16,7 +16,7 @@ class GameState(
 
   def endRound() = {
     districts.foreach { d =>
-      d.cards.foreach(_.sleep())
+      d.cards.view.flatten.foreach(_.sleep())
       d.clear()
     }
     families.foreach { _.resetHand() }

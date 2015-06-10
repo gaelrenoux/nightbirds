@@ -16,8 +16,6 @@ import fr.renoux.nightbirds.rules.state.LeftNeighbour
 import fr.renoux.nightbirds.rules.state.PublicPosition
 import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.engine.WorksWithTarget
-import fr.renoux.nightbirds.rules.state.MissingCard
-import fr.renoux.nightbirds.rules.state.MissingCardType
 import fr.renoux.nightbirds.rules.state.Neighbour
 
 class BasePlayer(implicit val random: Random) extends AbstractPlayer {
@@ -69,15 +67,14 @@ class BasePlayer(implicit val random: Random) extends AbstractPlayer {
 
   private def findRandomNeighbour(cardPosition: PublicPosition): Option[Neighbour] = {
     val neighbourFirstTry = if (random.nextBoolean) LeftNeighbour else RightNeighbour
-    val atPosition = neighbourFirstTry(cardPosition)
-    val cardAtPosition = atPosition map { _.get }
-    val filteredCard = cardAtPosition filter { _.cardType != Some(MissingCardType) }
-    if (filteredCard isDefined) {
+    val cardAtFirstPosition = neighbourFirstTry(cardPosition) flatMap { _.get }
+    if (cardAtFirstPosition isDefined) {
       return Some(neighbourFirstTry)
     }
 
     val neighbourSecondTry = neighbourFirstTry.opposite
-    if (neighbourSecondTry(cardPosition) map { _.get } filter { _.cardType != Some(MissingCardType) } isDefined) {
+    val cardAtSecondPosition = neighbourSecondTry(cardPosition) flatMap { _.get }
+    if (cardAtSecondPosition isDefined) {
       return Some(neighbourSecondTry)
     }
     return None

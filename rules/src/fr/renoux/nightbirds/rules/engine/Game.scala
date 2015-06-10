@@ -7,7 +7,6 @@ import fr.renoux.nightbirds.rules.state.District
 import fr.renoux.nightbirds.rules.state.Family
 import fr.renoux.nightbirds.rules.state.GameState
 import fr.renoux.nightbirds.rules.state.LeftNeighbour
-import fr.renoux.nightbirds.rules.state.MissingCard
 import fr.renoux.nightbirds.rules.state.Position
 import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.state.WithTarget
@@ -70,7 +69,7 @@ class Game(playersInput: Player*)(implicit val random: Random) {
 
       var next = findNextActivation()
       while (next.isDefined) {
-        doActivation(next.get._1, next.get._2)
+        doActivation(next.get)
         next = findNextActivation()
 
         if (maxActivations < 0) {
@@ -109,16 +108,15 @@ class Game(playersInput: Player*)(implicit val random: Random) {
   }
 
   private def findNextActivation() = {
-    val districtsAndIndex = gameState.districts.view map { d => d -> d.cards.indexWhere(_.canBeActivated) } filter { _._2 != -1 }
-    if (districtsAndIndex.size == 0) None
-    else Some(districtsAndIndex minBy { di => (di._2, di._1.position) })
-    //minBy { di => 100 * di._2 + di._1.position }
+    val candidates = gameState.districts map { _.nextActivationCandidate } flatten
+
+    if (candidates.size == 0) None
+    else Some(candidates minBy { _._2 } _1)
   }
 
   /** Second stage of the round : activating card at the given position */
-  private def doActivation(district: District, column: Int): Unit = {
-    val position = Position(district, column)
-    val card = position.get
+  private def doActivation(card: Card): Unit = {
+    val position = card.position.get
     val player = affectations(card.family.color)
 
     card.reveal()
@@ -128,9 +126,9 @@ class Game(playersInput: Player*)(implicit val random: Random) {
 
     (card, activation) match {
       case (_, Pass) => pass(card)
-      case (wot: WithoutTarget, ActivateWithoutTarget) => activateWithoutTarget(wot, position)
-      case (wt: WithTarget, ActivateWithTarget(neighbour)) => activateWithTarget(wt, position, neighbour)
-      case (taxi: Taxi, ActivateTaxi(neighbour, district, targetSide)) => activateTaxi(taxi, position, neighbour, gameState.districts(district.position), targetSide)
+      case (wot: WithoutTarget, ActivateWithoutTarget) => activateWithoutTarget(wot)
+      case (wt: WithTarget, ActivateWithTarget(neighbour)) => activateWithTarget(wt, neighbour)
+      case (taxi: Taxi, ActivateTaxi(neighbour, district, targetSide)) => activateTaxi(taxi, neighbour, gameState.districts(district.position), targetSide)
       case _ => throw new CheaterException("Incompatible activation " + activation + " for card " + card)
     }
   }
@@ -142,9 +140,9 @@ class Game(playersInput: Player*)(implicit val random: Random) {
   }
 
   /** Activation of a card at a certain position. No target. */
-  private def activateWithoutTarget(card: WithoutTarget, cardPosition: Position) = {
+  private def activateWithoutTarget(card: WithoutTarget) = {
     card.activate(gameState)
-    doWitnesses(card, cardPosition, None)
+    doWitnesses(card, None)
 
     GameLogger.activated(card)
   }
@@ -155,9 +153,13 @@ class Game(playersInput: Player*)(implicit val random: Random) {
    * @param cardPosition The activating card position on the board
    * @param neighbour The targeted neighbour (left or right)
    */
-  private def activateWithTarget(card: WithTarget, cardPosition: Position, neighbour: Neighbour) = {
-    val (targetPosition, target) = neighbour(cardPosition) map { p => (p, p.get) } filter { !_._2.isInstanceOf[MissingCard] } getOrElse {
-      throw new CheaterException("Target chosen is " + neighbour(cardPosition).map(_.get) + " at position " + neighbour + " by card " + card)
+  private def activateWithTarget(card: WithTarget, neighbour: Neighbour) = {
+    val cardPosition = card.position.get
+    val targetPosition = neighbour(cardPosition).getOrElse {
+      throw new CheaterException("Position " + neighbour + " doesn't exist for " + card)
+    }
+    val target = targetPosition.get getOrElse {
+      throw new CheaterException("No target at position " + neighbour + " for " + card)
     }
 
     val targetedPlayer = affectations(target.family.color)
@@ -170,19 +172,24 @@ class Game(playersInput: Player*)(implicit val random: Random) {
     /* check if the card can still act */
     if (card.canAct) {
       card.activate(target, gameState)
-      doWitnesses(card, cardPosition, Some(target))
+      doWitnesses(card, Some(target))
     }
 
     GameLogger.activated(card, target)
   }
 
   /** Activation of a card at a certain position, on a target at a certain position. */
-  private def activateTaxi(taxi: Taxi, taxiPosition: Position, neighbour: Neighbour, targetDistrict: District, targetSide: Neighbour) = {
+  private def activateTaxi(taxi: Taxi, neighbour: Neighbour, targetDistrict: District, targetSide: Neighbour) = {
+    val taxiPosition = taxi.position.get
     if (targetDistrict.position == taxiPosition.district.position) {
       throw new CheaterException("Taxi " + taxi + " wants to go the the same district " + targetDistrict)
     }
 
-    val (targetPosition, target) = neighbour(taxiPosition) map { p => (p, p.get) } filter { !_._2.isInstanceOf[MissingCard] } getOrElse {
+    val targetPosition = neighbour(taxiPosition).getOrElse {
+      throw new CheaterException("Position " + neighbour + " doesn't exist for taxi " + taxi)
+    }
+    val targetOption = targetPosition.get
+    val target = targetOption.getOrElse {
       throw new CheaterException("No target at position " + neighbour + " for taxi " + taxi)
     }
 
@@ -196,27 +203,25 @@ class Game(playersInput: Player*)(implicit val random: Random) {
     /* check if the card can still act */
     if (taxi.canAct) {
       taxi.activate(target, targetDistrict, targetSide, gameState)
-      doWitnesses(taxi, taxiPosition, Some(target))
+      doWitnesses(taxi, Some(target))
     }
 
     GameLogger.activated(taxi, target)
   }
 
   /** Work out the witness stuff */
-  private def doWitnesses(card: Card, cardPosition: Position, target: Option[Card]) = if (!card.out) {
-    val witnessesAndPosition = cardPosition.neighbours.view map { np => np.get -> np } filter { c =>
-      val (neighbour, neighbourPosition) = c
-      !target.contains(neighbour) && !neighbour.isInstanceOf[MissingCard]
-    } force
+  private def doWitnesses(card: Card, target: Option[Card]) = if (!card.out) {
+    val cardPosition = card.position.get
+    val neighbours = cardPosition.neighbours map { np => np.get } flatten    
+    val witnesses =  neighbours filter { !target.contains(_) }
 
-    witnessesAndPosition foreach { _._1.witness(card) }
+    witnesses foreach { _.witness(card) }
 
-    witnessesAndPosition foreach { c =>
-      val (neighbour, neighbourPosition) = c
+    witnesses foreach { neighbour =>
       /* the first neighbour can take out this card, so check each time */
       if (!card.out) {
         val neighbourPlayer = affectations(neighbour.family.color)
-        if (neighbour.hasWitnessReaction && neighbour.canAct && neighbourPlayer.reactToWitness(gameState.public, neighbourPosition.public, cardPosition.public)) {
+        if (neighbour.hasWitnessReaction && neighbour.canAct && neighbourPlayer.reactToWitness(gameState.public, neighbour.position.get.public, cardPosition.public)) {
           neighbour.reactToWitness(card)
         }
       }

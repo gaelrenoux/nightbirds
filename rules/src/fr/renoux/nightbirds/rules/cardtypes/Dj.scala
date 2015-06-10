@@ -15,7 +15,7 @@ class Dj(f: Family) extends Card(f)(DjType) with WithoutTarget {
 
   override def specificActivate() = {
     store(Cash(Rules.DjEarnings))
-    for (c <- this.position.get.district.cards) {
+    for (c <- this.position.get.district.cards.flatten) {
       if (c.family != family) c.take(Cash(Rules.DjPrice))
     }
   }

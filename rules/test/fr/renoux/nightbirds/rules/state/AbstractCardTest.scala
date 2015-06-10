@@ -10,7 +10,7 @@ import fr.renoux.nightbirds.rules.cardtypes.Kaki
 abstract class AbstractCardTest[C <: Card](var card: C = null) {
   var district: District = null
   var otherDistrict: District = null
-  
+
   var otherCard: BlankCard = null
   var otherLegalCard: LegalBlankCard = null
   var otherIllegalCard: IllegalBlankCard = null
@@ -39,7 +39,7 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     Assert.assertEquals(Cash.Zero, otherIllegalCard.cash)
   }
 
-  def prepare() : Unit
+  def prepare(): Unit
 
   @Test
   def testStore() = {
@@ -107,9 +107,15 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     Assert.assertEquals(false, card.tapped)
     Assert.assertEquals(false, card.revealed)
   }
-  
+
   @Test
   def testPlace() = {
+    district.clear()
+    otherDistrict.clear()
+    card.sleep()
+    otherCard.sleep()
+    otherLegalCard.sleep()
+    
     card.place(district)
     otherCard.place(district)
     otherLegalCard.place(otherDistrict)
@@ -120,8 +126,12 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     Assert.assertEquals(Some(Position(otherDistrict, 1)), card.position)
     Assert.assertEquals(Some(Position(district, 1)), otherCard.position)
     Assert.assertEquals(Some(Position(otherDistrict, 0)), otherLegalCard.position)
-    Assert.assertEquals(new MissingCard(district, 0), district(0))
-    
+    Assert.assertEquals(None, district(0))
+  }
+
+  @Test
+  def testToFixedString() = {
+    Assert.assertEquals(Card.FixedStringLength, card.toFixedString.length())
   }
 
   @Test
@@ -138,10 +148,10 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     }
     assertPublic(card)
   }
-  
-  protected def activate(card : Card) = card match {
-    case wt : WithTarget => wt.activate(otherCard, gs) 
-    case wot : WithoutTarget => wot.activate(gs) 
+
+  protected def activate(card: Card) = card match {
+    case wt: WithTarget => wt.activate(otherCard, gs)
+    case wot: WithoutTarget => wot.activate(gs)
   }
 
   protected def assertPublic(card: Card) = {
