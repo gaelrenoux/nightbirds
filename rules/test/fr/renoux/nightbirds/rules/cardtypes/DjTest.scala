@@ -13,7 +13,6 @@ import fr.renoux.nightbirds.rules.state.LegalBlankCard
 
 class DjTest extends AbstractCardTest[Dj] {
 
-  var district: District = null
   var myOtherCard: Card = null
   var myAnotherCard: Card = null
   var againAnotherFamily: Family = null
@@ -27,7 +26,6 @@ class DjTest extends AbstractCardTest[Dj] {
     againAnotherFamily = new Family(Taupe)
     againAnotherCard = new LegalBlankCard(againAnotherFamily)
 
-    district = new District(0)
     card.place(district)
     otherCard.place(district)
     otherLegalCard.place(district)

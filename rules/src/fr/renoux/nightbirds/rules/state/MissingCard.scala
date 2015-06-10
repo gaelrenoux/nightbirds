@@ -7,7 +7,7 @@ import fr.renoux.nightbirds.rules.cardtypes.NonexistingColor
 
 /** A card that is not here because it have been removed from the board (by the taxi, for instance) */
 object MissingCardType extends CardType(null)
-class MissingCard(d : District, ix : Int) extends Card(NonexistingFamily)(MissingCardType) {
+case class MissingCard(d : District, ix : Int) extends Card(NonexistingFamily)(MissingCardType) {
 
   override val legality = null
 

@@ -8,6 +8,8 @@ import fr.renoux.nightbirds.rules.cardtypes.Kaki
 
 /** Weird, but specifying card as an argument with default value null works, however defining it as an attribute with initial value null doesn't compile */
 abstract class AbstractCardTest[C <: Card](var card: C = null) {
+  var district: District = null
+  var otherDistrict: District = null
   
   var otherCard: BlankCard = null
   var otherLegalCard: LegalBlankCard = null
@@ -20,6 +22,8 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
 
   @Before
   final def genericPrepare() = {
+    district = new District(0)
+    otherDistrict = new District(0)
     family = new Family(Pink)
     otherFamily = new Family(Kaki)
     otherCard = new LegalBlankCard(otherFamily)
@@ -35,7 +39,7 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     Assert.assertEquals(Cash.Zero, otherIllegalCard.cash)
   }
 
-  def prepare()
+  def prepare() : Unit
 
   @Test
   def testStore() = {
@@ -102,6 +106,22 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     Assert.assertEquals(true, card.canAct)
     Assert.assertEquals(false, card.tapped)
     Assert.assertEquals(false, card.revealed)
+  }
+  
+  @Test
+  def testPlace() = {
+    card.place(district)
+    otherCard.place(district)
+    otherLegalCard.place(otherDistrict)
+    Assert.assertEquals(Some(Position(district, 0)), card.position)
+    Assert.assertEquals(Some(Position(district, 1)), otherCard.position)
+    Assert.assertEquals(Some(Position(otherDistrict, 0)), otherLegalCard.position)
+    card.place(otherDistrict)
+    Assert.assertEquals(Some(Position(otherDistrict, 1)), card.position)
+    Assert.assertEquals(Some(Position(district, 1)), otherCard.position)
+    Assert.assertEquals(Some(Position(otherDistrict, 0)), otherLegalCard.position)
+    Assert.assertEquals(new MissingCard(district, 0), district(0))
+    
   }
 
   @Test
