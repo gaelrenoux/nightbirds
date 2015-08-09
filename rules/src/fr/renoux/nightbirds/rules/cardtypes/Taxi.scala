@@ -12,6 +12,8 @@ import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.rules.state.LeftNeighbour
 
 object TaxiType extends CardType(Illegal)
+
+/** Special card : does not extends WithTarget or WithoutTarget. The activates method is implemented manually. */
 class Taxi(f: Family) extends Card(f)(TaxiType) {
 
   def activate(target: Card, district: District, targetSide: Neighbour, gs: GameState): Unit = {
