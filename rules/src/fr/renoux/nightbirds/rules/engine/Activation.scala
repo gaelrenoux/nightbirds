@@ -16,4 +16,4 @@ object Pass extends Activation with WorksWithoutTarget with WorksWithTarget with
 object ActivateWithoutTarget extends Activation with WorksWithoutTarget
 case class ActivateWithTarget(val target : Neighbour) extends Activation with WorksWithTarget
 case class ActivateTaxi(val target : Neighbour, val district : DistrictPublicState, val targetSide : Neighbour) extends Activation with WorksWithTaxi
-case class ActivatePrivateEye(val target1 : PublicPosition, val target2: PublicPosition) extends Activation with WorksWithPrivateEye
+case class ActivatePrivateEye(val target1 : PublicPosition, val target2: Option[PublicPosition]) extends Activation with WorksWithPrivateEye

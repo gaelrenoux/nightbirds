@@ -35,6 +35,7 @@ import fr.renoux.nightbirds.rules.engine.WorksWithTarget
 import fr.renoux.nightbirds.rules.engine.WorksWithTaxi
 import fr.renoux.nightbirds.rules.state.PublicPosition
 import fr.renoux.nightbirds.rules.cardtypes.PrivateEyeType
+import fr.renoux.nightbirds.rules.engine.WorksWithPrivateEye
 
 /** Basic skeleton for a player class. */
 abstract class AbstractPlayer extends Player {
@@ -92,7 +93,7 @@ abstract class AbstractPlayer extends Player {
     activateDefaultWithoutTarget(gs, card, cardPosition)
   }
 
-  def activatePrivateEye(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition) = {
+  def activatePrivateEye(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition): WorksWithPrivateEye = {
     ???
   }
 

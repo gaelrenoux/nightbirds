@@ -9,21 +9,21 @@ sealed abstract class Color(val cardMakers: (Family => Card)*) {
   lazy val toFixedString = toString.padTo(Color.FixedStringLength, ' ')
 }
 
+/* Colors for test */
 object Pink extends Color(new Bum(_), new Whore(_), new Cook(_), new Dealer(_))
-object Kaki extends Color(new Bum(_), new Photograph(_), new Taxi(_), new Bum(_))
-object Taupe extends Color(new Dj(_), new Skinhead(_), new Thug(_), new Whore(_))
-/* object Black extends Color(Whore, PrivateEye, Thug, Bum)
-object Blue extends Color(Photograph, Cop, Skinhead, Bum)
-object Green extends Color(Taxi, Dealer, PrivateEye, Burglar)
-object Orange extends Color(Thug, Cook, Burglar, Taxi)
-object White extends Color(Cook, Skinhead, Bum, Photograph)
-object Yellow extends Color(Cop, Whore, Dealer, Bum) */
+object Kaki extends Color(new Burglar(_), new Photograph(_), new Taxi(_), new Cop(_))
+object Taupe extends Color(new Dj(_), new Skinhead(_), new Thug(_), new PrivateEye(_))
+
+/* Real colors */
+object Black extends Color(new Whore(_), new PrivateEye(_), new Thug(_), new Bum(_))
+object Blue extends Color(new Photograph(_), new Cop(_), new Skinhead(_), new Bum(_))
+object Green extends Color(new Taxi(_), new Dealer(_), new PrivateEye(_), new Burglar(_))
+object Orange extends Color(new Thug(_), new Cook(_), new Burglar(_), new Taxi(_))
+object White extends Color(new Cook(_), new Skinhead(_), new Bum(_), new Photograph(_))
+object Yellow extends Color(new Cop(_), new Whore(_), new Dealer(_), new Bum(_))
 
 object Color {
-  def all: Set[Color] = Set(Pink, Kaki, Taupe)
-  
-  val FixedStringLength = 6 
-}
+  def all: Set[Color] = Set(Black, Blue, Green, Orange, White, Yellow)
 
-/** For missing cards */
-object NonexistingColor extends Color
+  val FixedStringLength = 6
+}

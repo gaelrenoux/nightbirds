@@ -17,6 +17,8 @@ import fr.renoux.nightbirds.rules.state.PublicPosition
 import fr.renoux.nightbirds.rules.state.RightNeighbour
 import fr.renoux.nightbirds.rules.engine.WorksWithTarget
 import fr.renoux.nightbirds.rules.state.Neighbour
+import fr.renoux.nightbirds.rules.engine.WorksWithPrivateEye
+import fr.renoux.nightbirds.rules.engine.ActivatePrivateEye
 
 class BasePlayer(implicit val random: Random) extends AbstractPlayer {
 
@@ -42,13 +44,16 @@ class BasePlayer(implicit val random: Random) extends AbstractPlayer {
     else super.activate(gs, card, cardPosition)
   }
 
+  /** All cards without a target are activated */
   override def activateDefaultWithoutTarget(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition) = ActivateWithoutTarget
 
+  /** All cards with a target chose one at random, if any is available */
   override def activateDefaultWithTarget(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition): WorksWithTarget = findRandomNeighbour(cardPosition) match {
     case None => Pass
     case Some(n) => ActivateWithTarget(n)
   }
 
+  /** The taxi targets a random neighbour and goes to a random district */
   override def activateTaxi(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition): WorksWithTaxi = {
     val district = cardPosition.district
     val districtSize = district.size
@@ -65,6 +70,34 @@ class BasePlayer(implicit val random: Random) extends AbstractPlayer {
     }
   }
 
+  /** The private eye activates on two random unrevealed cards, if available */
+  override def activatePrivateEye(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition): WorksWithPrivateEye = {
+
+    val districtAndIndexAndCardList = gs.districts flatMap { district =>
+      val existing = district.cards.zipWithIndex flatMap { optionAndIndex => optionAndIndex._1 map { optionAndIndex._2 -> _ } }
+      val notRevealed = existing filter { _._2.cardType.isEmpty }
+      notRevealed map { indexAndCard => (district, indexAndCard._1, indexAndCard._2) }
+    } filter { districtAndIndexAndCard =>
+      /* not the current card, thank you */
+     districtAndIndexAndCard._1 != cardPosition.district || districtAndIndexAndCard._2 != cardPosition.column
+    }
+    
+    val targets = random.pick(districtAndIndexAndCardList, 2) map {districtAndIndexAndCard =>
+      PublicPosition(districtAndIndexAndCard._1, districtAndIndexAndCard._2)
+    }
+    val targetsCount = targets.size
+    
+    if (targetsCount == 0) {
+      Pass
+    } else if (targetsCount==1) {
+      ActivatePrivateEye(targets(0), None)
+    } else {
+      ActivatePrivateEye(targets(0), Some(targets(1)))
+    }
+    
+  }
+
+  /** Helper method : finds a random available neighbour */
   private def findRandomNeighbour(cardPosition: PublicPosition): Option[Neighbour] = {
     val neighbourFirstTry = if (random.nextBoolean) LeftNeighbour else RightNeighbour
     val cardAtFirstPosition = neighbourFirstTry(cardPosition) flatMap { _.get }

@@ -13,7 +13,7 @@ class Random(val seed : Long = scala.util.Random.nextInt()) {
 
   def pick[T](source: Iterable[T]): T = pick(source.toSeq)
 
-  /** Pick in a random order from the source element */
+  /** Pick in a random order from the source element. If not enough elements, returns as much as possible. */
   def pick[T](source: Iterable[T], count: Int): Seq[T] = shuffle(source).take(count)
 
   def shuffle[T](source: Iterable[T]) = wrapped.shuffle(source).toSeq

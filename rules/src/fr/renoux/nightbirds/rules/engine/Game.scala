@@ -67,17 +67,19 @@ class Game(playersInput: Player*)(implicit val random: Random) {
       GameLogger.roundPlacementDone(gameState)
 
       /* Activation ! */
-      var maxActivations = gameState.districts map { _.cards.length } sum
+      val maxActivations = gameState.districts map { _.cards.length } sum
+      var activationsLeft = maxActivations
 
       var next = findNextActivation()
       while (next.isDefined) {
         doActivation(next.get)
         next = findNextActivation()
 
-        if (maxActivations < 0) {
-          throw new IllegalStateException
+        if (activationsLeft < 0) {
+          throw new IllegalStateException("Should have no more than %d activations".format(maxActivations))
         } else {
-          maxActivations = maxActivations - 1
+          activationsLeft = activationsLeft - 1
+          Logger.debug("        Activations left : %d".format(activationsLeft))
         }
       }
 
@@ -213,15 +215,21 @@ class Game(playersInput: Player*)(implicit val random: Random) {
   }
 
   /** Activation of a private eye, not the usual stuff. */
-  private def activatePrivateEye(eye: PrivateEye, target1: PublicPosition, target2: PublicPosition) = {
+  private def activatePrivateEye(eye: PrivateEye, targetPosition1: PublicPosition, targetPosition2: Option[PublicPosition]) = {
     val player = affectations(eye.family.color)
 
-    List(target1, target2) foreach { target =>
-      val card = gameState.districts(target.district.position)(target.column) getOrElse {
-        throw new CheaterException("Position " + target + " doesn't exist for private eye " + eye)
+    eye.activate(gameState)
+    
+    List(Some(targetPosition1), targetPosition2).flatten foreach { targetPosition =>
+      val card = gameState.districts(targetPosition.district.position)(targetPosition.column) getOrElse {
+        throw new CheaterException("Position " + targetPosition + " doesn't exist for private eye " + eye)
       }
-      player.see(gameState.public, target, card.cardType)
+      player.see(gameState.public, targetPosition, card.cardType)
+      GameLogger.activated(eye, card)
     }
+    
+    
+
   }
 
   /** Work out the witness stuff */
