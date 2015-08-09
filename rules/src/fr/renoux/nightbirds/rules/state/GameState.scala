@@ -36,7 +36,7 @@ class GameState(
     districts.mkString(prefix, " ; ", "")
   }
   
-  def toScore = families.map { f => f.color -> f.cash.amount }.sortBy(_._2).reverse.toMap
+  def toScore = families.map { f => f.color -> f.cash.amount }.sortBy(_._2).reverse
 
 }
 

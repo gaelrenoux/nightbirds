@@ -2,7 +2,7 @@ package fr.renoux.nightbirds.utils
 
 object Logger {
 
-  val level : LogLevel = Debug
+  val level : LogLevel = Warn
 
   def debug(msg : => String) = if (level <= Debug) println(msg)
   def info(msg : => String) = if (level <= Info) println(msg)
