@@ -17,11 +17,15 @@ trait Player {
 
   /** Returns a choice to activate a card, and optionally a target to go wih it */
   def activate(gs: GamePublicState, card : CardPublicState, position : PublicPosition): Activation
+  
   /** Returns a choice to react to a card being targeted */
   def reactToTargeted(gs: GamePublicState, target : PublicPosition, origin : PublicPosition): Boolean = true
 
   /** Returns a choice to react to a card being a witness */
   def reactToWitness(gs: GamePublicState, witness : PublicPosition, origin : PublicPosition): Boolean = true
+  
+  /** Informs the player of somthing he sees */
+  def see(gs: GamePublicState, position: PublicPosition, cardType: CardType) : Unit
   
   override def toString = {
     this.getClass().getSimpleName() + "@" + Integer.toHexString(this.hashCode())

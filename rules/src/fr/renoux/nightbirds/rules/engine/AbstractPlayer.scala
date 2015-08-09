@@ -33,15 +33,21 @@ import fr.renoux.nightbirds.rules.engine.ActivateTaxi
 import fr.renoux.nightbirds.rules.engine.WorksWithoutTarget
 import fr.renoux.nightbirds.rules.engine.WorksWithTarget
 import fr.renoux.nightbirds.rules.engine.WorksWithTaxi
+import fr.renoux.nightbirds.rules.state.PublicPosition
+import fr.renoux.nightbirds.rules.cardtypes.PrivateEyeType
 
-/** Basic skeleton for a player class */
+/** Basic skeleton for a player class. */
 abstract class AbstractPlayer extends Player {
 
   override def initGame(gs: GamePublicState, myColor: Color) = {
     /* The abstract player does nothing specific */
   }
 
-  /** Delegates to a specific method for each type */
+  /**
+   * Called when it is a card's turn to be activated. The return value will determine wether or not the card is activated, and activation properties (specifically the target).
+   *
+   * Delegates to a specific method for each type.
+   */
   override def activate(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition): Activation = card.cardType match {
     case Some(BumType) => activateBum(gs, card, cardPosition)
     case Some(BurglarType) => activateBurglar(gs, card, cardPosition)
@@ -50,7 +56,7 @@ abstract class AbstractPlayer extends Player {
     case Some(DealerType) => activateDealer(gs, card, cardPosition)
     case Some(DjType) => activateDj(gs, card, cardPosition)
     case Some(PhotographType) => activatePhotograph(gs, card, cardPosition)
-    //case PrivateEyeType => activateBum(gs, card, cardPosition)
+    case Some(PrivateEyeType) => activatePrivateEye(gs, card, cardPosition)
     case Some(SkinheadType) => activateSkinhead(gs, card, cardPosition)
     case Some(TaxiType) => activateTaxi(gs, card, cardPosition)
     case Some(ThugType) => activateThug(gs, card, cardPosition)
@@ -86,6 +92,10 @@ abstract class AbstractPlayer extends Player {
     activateDefaultWithoutTarget(gs, card, cardPosition)
   }
 
+  def activatePrivateEye(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition) = {
+    ???
+  }
+
   def activateSkinhead(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition) = {
     activateDefaultWithTarget(gs, card, cardPosition)
   }
@@ -108,6 +118,10 @@ abstract class AbstractPlayer extends Player {
 
   def activateDefaultWithTarget(gs: GamePublicState, card: CardPublicState, cardPosition: PublicPosition): WorksWithTarget = {
     ???
+  }
+
+  def see(gs: GamePublicState, position: PublicPosition, cardType: CardType) = {
+    //do nothing
   }
 
 }

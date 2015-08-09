@@ -14,6 +14,8 @@ import fr.renoux.nightbirds.rules.state.WithoutTarget
 import fr.renoux.nightbirds.utils.Logger
 import fr.renoux.nightbirds.rules.state.Neighbour
 import fr.renoux.nightbirds.rules.cardtypes.Taxi
+import fr.renoux.nightbirds.rules.cardtypes.PrivateEye
+import fr.renoux.nightbirds.rules.state.PublicPosition
 
 class Game(playersInput: Player*)(implicit val random: Random) {
 
@@ -129,6 +131,7 @@ class Game(playersInput: Player*)(implicit val random: Random) {
       case (wot: WithoutTarget, ActivateWithoutTarget) => activateWithoutTarget(wot)
       case (wt: WithTarget, ActivateWithTarget(neighbour)) => activateWithTarget(wt, neighbour)
       case (taxi: Taxi, ActivateTaxi(neighbour, district, targetSide)) => activateTaxi(taxi, neighbour, gameState.districts(district.position), targetSide)
+      case (eye: PrivateEye, ActivatePrivateEye(target1, target2)) => activatePrivateEye(eye, target1, target2)
       case _ => throw new CheaterException("Incompatible activation " + activation + " for card " + card)
     }
   }
@@ -178,7 +181,7 @@ class Game(playersInput: Player*)(implicit val random: Random) {
     GameLogger.activated(card, target)
   }
 
-  /** Activation of a card at a certain position, on a target at a certain position. */
+  /** Activation of a taxi, with special parameters. */
   private def activateTaxi(taxi: Taxi, neighbour: Neighbour, targetDistrict: District, targetSide: Neighbour) = {
     val taxiPosition = taxi.position.get
     if (targetDistrict.position == taxiPosition.district.position) {
@@ -209,11 +212,23 @@ class Game(playersInput: Player*)(implicit val random: Random) {
     GameLogger.activated(taxi, target)
   }
 
+  /** Activation of a private eye, not the usual stuff. */
+  private def activatePrivateEye(eye: PrivateEye, target1: PublicPosition, target2: PublicPosition) = {
+    val player = affectations(eye.family.color)
+
+    List(target1, target2) foreach { target =>
+      val card = gameState.districts(target.district.position)(target.column) getOrElse {
+        throw new CheaterException("Position " + target + " doesn't exist for private eye " + eye)
+      }
+      player.see(gameState.public, target, card.cardType)
+    }
+  }
+
   /** Work out the witness stuff */
   private def doWitnesses(card: Card, target: Option[Card]) = if (!card.out) {
     val cardPosition = card.position.get
-    val neighbours = cardPosition.neighbours map { np => np.get } flatten    
-    val witnesses =  neighbours filter { !target.contains(_) }
+    val neighbours = cardPosition.neighbours map { np => np.get } flatten
+    val witnesses = neighbours filter { !target.contains(_) }
 
     witnesses foreach { _.witness(card) }
 

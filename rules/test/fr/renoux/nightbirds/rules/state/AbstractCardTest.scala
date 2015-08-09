@@ -5,6 +5,8 @@ import org.junit.Before
 import org.junit.Test
 import fr.renoux.nightbirds.rules.cardtypes.Pink
 import fr.renoux.nightbirds.rules.cardtypes.Kaki
+import fr.renoux.nightbirds.rules.cardtypes.Taxi
+import fr.renoux.nightbirds.rules.cardtypes.PrivateEye
 
 /** Weird, but specifying card as an argument with default value null works, however defining it as an attribute with initial value null doesn't compile */
 abstract class AbstractCardTest[C <: Card](var card: C = null) {
@@ -142,16 +144,15 @@ abstract class AbstractCardTest[C <: Card](var card: C = null) {
     assertPublic(card)
     card.takeIfAvailable(Cash(1))
     assertPublic(card)
-    card match {
-      case wot: WithoutTarget => wot.activate(gs)
-      case wt: WithTarget => wt.activate(otherCard, gs)
-    }
+    activate(card)
     assertPublic(card)
   }
 
   protected def activate(card: Card) = card match {
     case wt: WithTarget => wt.activate(otherCard, gs)
     case wot: WithoutTarget => wot.activate(gs)
+    case taxi: Taxi => taxi.activate(otherCard, district, LeftNeighbour, gs)
+    case eye: PrivateEye => eye.activate(gs)
   }
 
   protected def assertPublic(card: Card) = {
